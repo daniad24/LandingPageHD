@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Editare site</title>
+  <link rel="icon" href="../assets/avatar.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav">
+      <a href="../" class="brand">← Site</a>
+      <span class="muted small" id="who"></span>
+      <button class="btn small-btn" id="logout" hidden>Ieșire</button>
+    </nav>
+  </header>
+
+  <main class="admin">
+    <!-- Login -->
+    <section id="loginView" class="card panel" hidden>
+      <h1>Autentificare</h1>
+      <p class="muted">Introdu tokenul GitHub care are drept de scriere doar pe acest repo. Se păstrează doar pe acest dispozitiv.</p>
+      <form id="loginForm">
+        <label>Token GitHub
+          <input type="password" id="token" autocomplete="current-password" required placeholder="github_pat_…">
+        </label>
+        <details class="advanced">
+          <summary>Setări avansate</summary>
+          <label>Proprietar repo <input id="owner"></label>
+          <label>Repo <input id="repo"></label>
+          <label>Branch <input id="branch"></label>
+        </details>
+        <button class="btn primary wide" type="submit">Intră</button>
+        <p class="error" id="loginError"></p>
+      </form>
+      <details class="help">
+        <summary>Cum obțin un token?</summary>
+        <ol>
+          <li>Deschide <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a>.</li>
+          <li>La <b>Repository access</b> alege <i>Only select repositories</i> și selectează acest repo.</li>
+          <li>La <b>Permissions → Contents</b> alege <i>Read and write</i>.</li>
+          <li>Generează tokenul și lipește-l aici.</li>
+        </ol>
+      </details>
+    </section>
+
+    <!-- Editor -->
+    <section id="editorView" hidden>
+      <div id="form"></div>
+    </section>
+  </main>
+
+  <div class="savebar" id="savebar" hidden>
+    <span id="status" class="muted small">Nicio modificare</span>
+    <button class="btn" id="reload">Reîncarcă</button>
+    <button class="btn primary" id="save" disabled>Salvează</button>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

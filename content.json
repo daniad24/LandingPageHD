@@ -1,0 +1,67 @@
+{
+  "profile": {
+    "name": "Daniel Husanu",
+    "title": "Titlul tău profesional",
+    "tagline": "O frază scurtă despre ce faci și cum îi ajuți pe clienți.",
+    "location": "Oraș, România",
+    "photo": "assets/avatar.svg",
+    "email": "contact@husanudaniel.ro",
+    "phone": "+40 700 000 000",
+    "whatsapp": "40700000000",
+    "website": "https://husanudaniel.ro",
+    "availability": "Disponibil pentru proiecte noi",
+    "cvFile": ""
+  },
+  "social": [
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/" },
+    { "label": "GitHub", "url": "https://github.com/daniad24" }
+  ],
+  "about": "Scrie aici câteva rânduri despre tine: experiența, domeniile în care lucrezi și ce te motivează.\n\nPoți folosi mai multe paragrafe, separate printr-un rând gol.",
+  "stats": [
+    { "value": "10+", "label": "Ani de experiență" },
+    { "value": "50+", "label": "Proiecte livrate" },
+    { "value": "30+", "label": "Clienți mulțumiți" }
+  ],
+  "experience": [
+    {
+      "role": "Funcția ta actuală",
+      "company": "Compania",
+      "period": "2020 – prezent",
+      "description": "Responsabilități principale și rezultate obținute."
+    },
+    {
+      "role": "Funcția anterioară",
+      "company": "Compania anterioară",
+      "period": "2016 – 2020",
+      "description": "Ce ai făcut acolo, pe scurt."
+    }
+  ],
+  "education": [
+    {
+      "title": "Specializarea",
+      "institution": "Universitatea",
+      "period": "2012 – 2016"
+    }
+  ],
+  "skills": [
+    { "group": "Tehnic", "items": ["Competența 1", "Competența 2", "Competența 3"] },
+    { "group": "Business", "items": ["Consultanță", "Analiză", "Management de proiect"] }
+  ],
+  "projects": [
+    {
+      "title": "Proiectul 1",
+      "description": "Descriere scurtă: problema, soluția și rezultatul.",
+      "tags": ["Tag 1", "Tag 2"],
+      "link": "",
+      "image": ""
+    },
+    {
+      "title": "Proiectul 2",
+      "description": "Descriere scurtă: problema, soluția și rezultatul.",
+      "tags": ["Tag 1"],
+      "link": "",
+      "image": ""
+    }
+  ],
+  "footer": "Toate drepturile rezervate."
+}
