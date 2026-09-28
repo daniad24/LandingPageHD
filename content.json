@@ -1,10 +1,10 @@
 {
   "profile": {
     "name": "Daniel Husanu",
-    "title": "Titlul tău profesional",
+    "title": "Web Dev | UI/UX design | ",
     "tagline": "O frază scurtă despre ce faci și cum îi ajuți pe clienți.",
     "location": "Bucuresti, România",
-    "photo": "assets/avatar.svg",
+    "photo": "assets/uploads/1790621745756-img-8680.jpg",
     "email": "contact@husanudaniel.ro",
     "phone": "+40 700 000 000",
     "whatsapp": "40700000000",
@@ -14,12 +14,12 @@
   },
   "social": [
     {
-      "label": "LinkedIn",
-      "url": "https://www.linkedin.com/"
+      "label": "Instagram",
+      "url": "https://www.instagram.com/danielhusanuu?stkn=MTdkeWRzZ2tibmptNw%3D%3D&utm_source=qr"
     },
     {
-      "label": "GitHub",
-      "url": "https://github.com/daniad24"
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/"
     }
   ],
   "about": "Scrie aici câteva rânduri despre tine: experiența, domeniile în care lucrezi și ce te motivează.\n\nPoți folosi mai multe paragrafe, separate printr-un rând gol.",
@@ -39,9 +39,9 @@
   ],
   "experience": [
     {
-      "role": "Funcția ta actuală",
-      "company": "Compania",
-      "period": "2020 – prezent",
+      "role": "Cyber  ",
+      "company": "Alfatrust - Alfasign",
+      "period": "2023 – prezent",
       "description": "Responsabilități principale și rezultate obținute."
     },
     {
@@ -53,7 +53,7 @@
   ],
   "education": [
     {
-      "title": "Specializarea",
+      "title": "Computer",
       "institution": "Universitatea",
       "period": "2012 – 2016"
     }
