@@ -100,7 +100,10 @@
   var AUTH_PATH = "admin/auth.json";
   var KDF_ITER = 600000;
   function b64ToBytes(b64) { var s = atob(b64); var u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+  var NO_CRYPTO_MSG = "Login-ul cu parolă merge doar pe https://. Deschide pagina cu https:// sau intră cu tokenul.";
   function deriveKey(user, pass, salt, iter) {
+    // crypto.subtle only exists on secure (https) pages.
+    if (!window.crypto || !window.crypto.subtle) return Promise.reject(new Error(NO_CRYPTO_MSG));
     var enc = new TextEncoder();
     return crypto.subtle.importKey("raw", enc.encode(user.trim().toLowerCase() + "\n" + pass), "PBKDF2", false, ["deriveKey"])
       .then(function (base) {
@@ -361,7 +364,9 @@
       .then(function (p) {
         cfg.token = p.token; cfg.owner = p.owner || cfg.owner; cfg.repo = p.repo || cfg.repo; cfg.branch = p.branch || cfg.branch;
         return load().then(saveCfg).catch(function (err) { $("#passError").textContent = errMsg(err); });
-      }, function () { $("#passError").textContent = "Utilizator sau parolă greșite."; })
+      }, function (err) {
+        $("#passError").textContent = err && err.message === NO_CRYPTO_MSG ? NO_CRYPTO_MSG : "Utilizator sau parolă greșite.";
+      })
       .then(function () { btn.disabled = false; btn.textContent = "Intră"; $("#pass").value = ""; });
   });
 

@@ -2,87 +2,107 @@
 <html lang="ro">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4e9da">
   <title>Daniel Husanu</title>
   <meta name="description" content="CV, proiecte și date de contact.">
   <link rel="icon" href="assets/avatar.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
-  <header class="topbar">
+  <div class="glow" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="topbar" id="topbar">
     <nav class="nav">
-      <a href="#top" class="brand" data-field="profile.name">&nbsp;</a>
+      <a href="#top" class="brand"><span class="brand-dot"></span><span data-field="profile.name">&nbsp;</span></a>
       <div class="nav-links">
         <a href="#despre">Despre</a>
-        <a href="#experienta">Experiență</a>
         <a href="#proiecte">Proiecte</a>
+        <a href="#experienta">Experiență</a>
         <a href="#contact">Contact</a>
       </div>
-      <button class="icon-btn" id="themeToggle" aria-label="Schimbă tema">
-        <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-      </button>
+      <a href="#contact" class="nav-cta">Hai să vorbim</a>
     </nav>
   </header>
 
   <main id="top">
-    <!-- Business card -->
+    <!-- Hero / business card -->
     <section class="hero">
-      <article class="card bizcard">
+      <div class="avatar-wrap reveal" style="--d:0">
         <img class="avatar" id="avatar" alt="">
-        <div class="bizcard-body">
-          <p class="availability" id="availability" hidden><span class="dot"></span><span></span></p>
-          <h1 data-field="profile.name"></h1>
-          <p class="title" data-field="profile.title"></p>
-          <p class="tagline" data-field="profile.tagline"></p>
-          <p class="location" id="location"></p>
-          <div class="actions" id="actions"></div>
-          <div class="social" id="social"></div>
-        </div>
-      </article>
-      <div class="stats" id="stats"></div>
+      </div>
+      <p class="availability reveal" id="availability" style="--d:1" hidden><span class="dot"></span><span></span></p>
+      <h1 class="reveal" style="--d:2" id="heroName"></h1>
+      <p class="title reveal" style="--d:3" data-field="profile.title"></p>
+      <p class="tagline reveal" style="--d:4" data-field="profile.tagline"></p>
+      <p class="location reveal" style="--d:5" id="location"></p>
+      <div class="actions reveal" style="--d:6" id="actions"></div>
+      <div class="social reveal" style="--d:7" id="social"></div>
+      <a href="#despre" class="scroll-hint" aria-label="Derulează"><span></span></a>
     </section>
+
+    <div class="stats" id="stats"></div>
 
     <section id="despre" class="section">
-      <h2>Despre mine</h2>
-      <div class="card prose" id="about"></div>
-    </section>
-
-    <section id="experienta" class="section">
-      <h2>Experiență</h2>
-      <ol class="timeline" id="experience"></ol>
-      <h3 class="subhead">Educație</h3>
-      <ol class="timeline" id="education"></ol>
-    </section>
-
-    <section id="competente" class="section">
-      <h2>Competențe</h2>
-      <div class="skills" id="skills"></div>
+      <p class="eyebrow reveal">Despre mine</p>
+      <div class="prose reveal" id="about"></div>
     </section>
 
     <section id="proiecte" class="section">
-      <h2>Proiecte</h2>
-      <div class="projects" id="projects"></div>
-    </section>
-
-    <section id="contact" class="section">
-      <h2>Contact</h2>
-      <div class="card contact-card">
-        <div class="contact-list" id="contactList"></div>
-        <div class="qr-wrap">
-          <div id="qr" class="qr"></div>
-          <p class="muted">Scanează pentru a deschide pagina</p>
+      <div class="section-head reveal">
+        <div>
+          <p class="eyebrow">Proiecte</p>
+          <h2>Lucruri <em>pe care le-am construit</em></h2>
+        </div>
+        <div class="carousel-nav" id="carouselNav">
+          <button class="round-btn" data-dir="-1" aria-label="Proiectul anterior"><svg viewBox="0 0 24 24"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg></button>
+          <button class="round-btn" data-dir="1" aria-label="Proiectul următor"><svg viewBox="0 0 24 24"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg></button>
         </div>
       </div>
+      <div class="carousel reveal" id="projects" tabindex="0" aria-roledescription="carousel" aria-label="Proiecte"></div>
+      <div class="carousel-foot">
+        <div class="dots" id="dots"></div>
+        <span class="counter" id="counter"></span>
+      </div>
+    </section>
+
+    <section id="competente" class="section section-bleed">
+      <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+      <div class="skills" id="skills"></div>
+    </section>
+
+    <section id="experienta" class="section">
+      <p class="eyebrow reveal">Parcurs</p>
+      <h2 class="reveal">Experiență <em>&amp; educație</em></h2>
+      <ol class="timeline" id="experience"></ol>
+      <ol class="timeline timeline-edu" id="education"></ol>
     </section>
   </main>
 
-  <footer class="footer">
-    <p>© <span id="year"></span> <span data-field="profile.name"></span>. <span data-field="footer"></span></p>
-    <a href="admin/" class="muted small">Editare</a>
+  <footer class="footer" id="contact">
+    <div class="footer-inner">
+      <p class="eyebrow light reveal">Contact</p>
+      <h2 class="reveal">Hai să construim <em>ceva frumos.</em></h2>
+      <div class="contact-grid">
+        <div class="contact-list reveal" id="contactList"></div>
+        <div class="qr-wrap reveal">
+          <div id="qr" class="qr"></div>
+          <p>Scanează ca să deschizi pagina</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="year"></span> <span data-field="profile.name"></span>. <span data-field="footer"></span></p>
+        <a href="admin/">Editare</a>
+      </div>
+    </div>
   </footer>
+
+  <nav class="dock" id="dock" aria-label="Acțiuni rapide"></nav>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
   <script src="app.js" defer></script>
