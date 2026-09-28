@@ -96,6 +96,38 @@
     return api(path, { method: "PUT", body: body });
   }
 
+  // ---- user/password login: the token is stored AES-GCM encrypted in admin/auth.json ----
+  var AUTH_PATH = "admin/auth.json";
+  var KDF_ITER = 600000;
+  function b64ToBytes(b64) { var s = atob(b64); var u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+  function deriveKey(user, pass, salt, iter) {
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey("raw", enc.encode(user.trim().toLowerCase() + "\n" + pass), "PBKDF2", false, ["deriveKey"])
+      .then(function (base) {
+        return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" },
+          base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+      });
+  }
+  function encryptAuth(user, pass, payload) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return deriveKey(user, pass, salt, KDF_ITER).then(function (key) {
+      return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, new TextEncoder().encode(JSON.stringify(payload)));
+    }).then(function (ct) {
+      return { v: 1, iter: KDF_ITER, salt: bytesToB64(salt), iv: bytesToB64(iv), data: bytesToB64(new Uint8Array(ct)) };
+    });
+  }
+  function decryptAuth(auth, user, pass) {
+    return deriveKey(user, pass, b64ToBytes(auth.salt), auth.iter).then(function (key) {
+      return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(auth.iv) }, key, b64ToBytes(auth.data));
+    }).then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); });
+  }
+  function fetchAuth() {
+    return fetch("auth.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
   // ---- UI state ----
   function setStatus(msg) { $("#status").textContent = msg; }
   function markDirty() { dirty = true; $("#save").disabled = false; setStatus("Modificări nesalvate"); }
@@ -301,7 +333,7 @@
   });
   $("#logout").addEventListener("click", function () {
     if (dirty && !confirm("Ai modificări nesalvate. Ieși oricum?")) return;
-    delete cfg.token; saveCfg(); data = null; $("#token").value = ""; $("#who").textContent = ""; show("login");
+    delete cfg.token; saveCfg(); data = null; $("#token").value = ""; $("#who").textContent = ""; showLogin();
   });
   $("#save").addEventListener("click", save);
   $("#reload").addEventListener("click", function () {
@@ -310,9 +342,54 @@
   });
   window.addEventListener("beforeunload", function (e) { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
 
-  if (cfg.token) {
-    load().catch(function (err) { show("login"); $("#loginError").textContent = errMsg(err); });
-  } else {
+  var authBlob = null;
+  function showLogin() {
     show("login");
+    $("#passForm").hidden = !authBlob;
+    $("#loginForm").hidden = !!authBlob;
   }
+  $("#useToken").addEventListener("click", function (e) {
+    e.preventDefault(); $("#passForm").hidden = true; $("#loginForm").hidden = false;
+  });
+
+  $("#passForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = e.target.querySelector("button[type=submit]");
+    btn.disabled = true; btn.textContent = "Se verifică…";
+    $("#passError").textContent = "";
+    decryptAuth(authBlob, $("#user").value, $("#pass").value)
+      .then(function (p) {
+        cfg.token = p.token; cfg.owner = p.owner || cfg.owner; cfg.repo = p.repo || cfg.repo; cfg.branch = p.branch || cfg.branch;
+        return load().then(saveCfg).catch(function (err) { $("#passError").textContent = errMsg(err); });
+      }, function () { $("#passError").textContent = "Utilizator sau parolă greșite."; })
+      .then(function () { btn.disabled = false; btn.textContent = "Intră"; $("#pass").value = ""; });
+  });
+
+  $("#credForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var msg = $("#credMsg"), user = $("#newUser").value, pass = $("#newPass").value;
+    if (pass !== $("#newPass2").value) { msg.textContent = "Parolele nu coincid."; return; }
+    msg.textContent = "Se criptează și se salvează…";
+    encryptAuth(user, pass, { token: cfg.token, owner: cfg.owner, repo: cfg.repo, branch: cfg.branch })
+      .then(function (blob) {
+        var text = JSON.stringify(blob, null, 2) + "\n";
+        return api(AUTH_PATH).then(function (j) { return j.sha; }, function (err) { if (err.status === 404) return null; throw err; })
+          .then(function (prev) { return putFile(AUTH_PATH, bytesToB64(new TextEncoder().encode(text)), "Actualizare date de login", prev); })
+          .then(function () { authBlob = blob; });
+      })
+      .then(function () {
+        msg.textContent = "Salvat ✓ De acum poți intra cu utilizator și parolă (activ în ~1 minut).";
+        e.target.reset();
+      })
+      .catch(function (err) { msg.textContent = "Eroare: " + errMsg(err); });
+  });
+
+  fetchAuth().then(function (a) {
+    authBlob = a && a.data ? a : null;
+    if (cfg.token) {
+      load().catch(function (err) { showLogin(); $(authBlob ? "#passError" : "#loginError").textContent = errMsg(err); });
+    } else {
+      showLogin();
+    }
+  });
 })();

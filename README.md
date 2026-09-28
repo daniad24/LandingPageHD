@@ -18,6 +18,12 @@ Landing Page pentru HusanuDaniel.ro – carte de vizită, CV și proiecte.
 2. Deschide `https://husanudaniel.ro/admin/` (sau linkul „Editare” din subsol), lipește tokenul.
 3. Modifică, apasă **Salvează**. Se face un commit în `content.json`, iar site-ul se actualizează în ~1 minut.
 
+### Login cu utilizator și parolă (opțional)
+După ce ai intrat o dată cu tokenul, deschide secțiunea **Utilizator și parolă** din admin și setează-le.
+Tokenul se salvează **criptat** (AES-GCM, cheie derivată din user + parolă cu PBKDF2) în `admin/auth.json`.
+De acum intri doar cu user și parolă. Fișierul e public, deci folosește o parolă lungă și unică.
+Dacă uiți parola: intră cu tokenul („Intră cu token GitHub”) și setează alta.
+
 Tokenul rămâne doar în browserul dispozitivului tău. Nu-l partaja. Dacă pierzi telefonul, revocă-l din GitHub.
 Branch-ul editat implicit este `main` (se poate schimba la „Setări avansate”).
 
