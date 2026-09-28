@@ -15,7 +15,7 @@ Landing Page pentru HusanuDaniel.ro – carte de vizită, CV și proiecte.
 ## Editare de pe telefon
 1. Creează un token: GitHub → Settings → Developer settings → **Fine-grained tokens** →
    *Only select repositories* = acest repo, *Permissions → Contents* = **Read and write**.
-2. Deschide `https://husanudaniel.ro/admin/` (sau linkul „Editare” din subsol), lipește tokenul.
+2. Deschide `https://husanudaniel.ro/admin/` (nu e legat de nicăieri de pe site, îl deschizi direct), lipește tokenul.
 3. Modifică, apasă **Salvează**. Se face un commit în `content.json`, iar site-ul se actualizează în ~1 minut.
 
 ### Login cu utilizator și parolă (opțional)
