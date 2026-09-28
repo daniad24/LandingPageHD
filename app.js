@@ -92,10 +92,10 @@
   function countUp(el) {
     var raw = el.getAttribute("data-value"), m = raw.match(/^(\D*)(\d+(?:[.,]\d+)?)(.*)$/);
     if (!m || reduceMotion) { el.textContent = raw; return; }
-    var target = parseFloat(m[2].replace(",", ".")), start = null, dur = 1600;
+    var target = parseFloat(m[2].replace(",", ".")), start = null, dur = 3500;
     (function step(t) {
       if (start === null) start = t;
-      var k = Math.min(1, (t - start) / dur), eased = 1 - Math.pow(1 - k, 4);
+      var k = Math.min(1, (t - start) / dur), eased = 1 - Math.pow(1 - k, 3);
       el.textContent = m[1] + Math.round(target * eased) + m[3];
       if (k < 1) requestAnimationFrame(step);
     })(performance.now());
