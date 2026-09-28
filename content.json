@@ -3,7 +3,7 @@
     "name": "Daniel Husanu",
     "title": "Titlul tău profesional",
     "tagline": "O frază scurtă despre ce faci și cum îi ajuți pe clienți.",
-    "location": "Oraș, România",
+    "location": "Bucuresti, România",
     "photo": "assets/avatar.svg",
     "email": "contact@husanudaniel.ro",
     "phone": "+40 700 000 000",
@@ -13,14 +13,29 @@
     "cvFile": ""
   },
   "social": [
-    { "label": "LinkedIn", "url": "https://www.linkedin.com/" },
-    { "label": "GitHub", "url": "https://github.com/daniad24" }
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/daniad24"
+    }
   ],
   "about": "Scrie aici câteva rânduri despre tine: experiența, domeniile în care lucrezi și ce te motivează.\n\nPoți folosi mai multe paragrafe, separate printr-un rând gol.",
   "stats": [
-    { "value": "10+", "label": "Ani de experiență" },
-    { "value": "50+", "label": "Proiecte livrate" },
-    { "value": "30+", "label": "Clienți mulțumiți" }
+    {
+      "value": "10+",
+      "label": "Ani de experiență"
+    },
+    {
+      "value": "50+",
+      "label": "Proiecte livrate"
+    },
+    {
+      "value": "30+",
+      "label": "Clienți mulțumiți"
+    }
   ],
   "experience": [
     {
@@ -44,21 +59,40 @@
     }
   ],
   "skills": [
-    { "group": "Tehnic", "items": ["Competența 1", "Competența 2", "Competența 3"] },
-    { "group": "Business", "items": ["Consultanță", "Analiză", "Management de proiect"] }
+    {
+      "group": "Tehnic",
+      "items": [
+        "Competența 1",
+        "Competența 2",
+        "Competența 3"
+      ]
+    },
+    {
+      "group": "Business",
+      "items": [
+        "Consultanță",
+        "Analiză",
+        "Management de proiect"
+      ]
+    }
   ],
   "projects": [
     {
       "title": "Proiectul 1",
       "description": "Descriere scurtă: problema, soluția și rezultatul.",
-      "tags": ["Tag 1", "Tag 2"],
+      "tags": [
+        "Tag 1",
+        "Tag 2"
+      ],
       "link": "",
       "image": ""
     },
     {
       "title": "Proiectul 2",
       "description": "Descriere scurtă: problema, soluția și rezultatul.",
-      "tags": ["Tag 1"],
+      "tags": [
+        "Tag 1"
+      ],
       "link": "",
       "image": ""
     }
