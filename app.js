@@ -191,7 +191,9 @@
     $("#actions").innerHTML = actions.join("");
 
     $("#social").innerHTML = list(c.social).filter(function (s) { return safeUrl(s.url); }).map(function (s) {
-      return '<a href="' + esc(safeUrl(s.url)) + '" target="_blank" rel="noopener" aria-label="' + esc(s.label) + '" title="' + esc(s.label) + '">' + socialIcon(s.label, s.url) + "</a>";
+      var brand = (String(s.label) + " " + String(s.url)).toLowerCase().match(/instagram|linkedin|github|facebook|tiktok/);
+      return '<a class="s-' + (brand ? brand[0] : "web") + '" href="' + esc(safeUrl(s.url)) + '" target="_blank" rel="noopener">' +
+        socialIcon(s.label, s.url) + "<span>" + esc(s.label) + "</span>" + ICONS.arrow + "</a>";
     }).join("");
 
     // Stats

@@ -183,11 +183,28 @@ main { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
 .btn.dark { background: var(--ink); color: var(--ink-text); border-color: transparent; }
 .social { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; justify-content: center; }
 .social a {
-  width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%;
-  background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  transition: transform .35s var(--ease), background .3s, color .3s;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 18px 0 8px;
+  border-radius: 999px; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  font-weight: 600; font-size: .98rem;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), background .3s, color .3s;
 }
-.social a:hover { transform: translateY(-3px) rotate(-6deg); background: var(--ink); color: var(--ink-text); }
+.social a > svg:first-child {
+  width: 36px; height: 36px; padding: 8px; border-radius: 50%;
+  background: var(--ink); color: var(--ink-text); transition: background .3s;
+}
+.social a > svg:last-child { width: 15px; height: 15px; opacity: .45; transition: transform .35s var(--ease), opacity .3s; }
+.social a:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.social a:hover > svg:last-child { opacity: 1; transform: translate(2px, -2px); }
+.social a:active { transform: scale(.97); }
+.social .s-instagram > svg:first-child { background: radial-gradient(circle at 30% 110%, #fdd26a 0%, #f77737 30%, #e1306c 60%, #833ab4 100%); color: #fff; }
+.social .s-linkedin > svg:first-child { background: #0a66c2; color: #fff; }
+.social .s-facebook > svg:first-child { background: #1877f2; color: #fff; }
+@media (max-width: 480px) {
+  .social { width: 100%; }
+  .social a { flex: 1 1 150px; justify-content: flex-start; }
+  .social a > svg:last-child { margin-left: auto; }
+}
 
 .scroll-hint { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); width: 26px; height: 42px; border: 2px solid rgba(43, 29, 20, .25); border-radius: 20px; }
 .scroll-hint span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--accent); animation: wheel 1.8s var(--ease) infinite; }
