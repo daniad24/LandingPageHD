@@ -25,32 +25,32 @@
   "about": "Scrie aici câteva rânduri despre tine: experiența, domeniile în care lucrezi și ce te motivează.\n\nPoți folosi mai multe paragrafe, separate printr-un rând gol.",
   "stats": [
     {
-      "value": "10+",
+      "value": "4",
       "label": "Ani de experiență"
     },
     {
-      "value": "50+",
+      "value": "4",
       "label": "Proiecte livrate"
     },
     {
-      "value": "30+",
+      "value": "3",
       "label": "Clienți mulțumiți"
     }
   ],
   "experience": [
     {
-      "role": "Crypto Officer (CO) · Certificate digitale calificate",
+      "role": "Certificate digitale calificate & vânzări",
       "company": "AlfaTrust Certification – Alfasign",
       "period": "2023 – prezent",
-      "description": "Emit certificate digitale calificate și creez semnături electronice calificate pentru clienți, ca Crypto Officer (CO) în cadrul unui prestator acreditat de servicii de încredere (eIDAS).\nGestionez vânzările și relația cu clienții, de la primul contact până la emiterea certificatului și suport.\nÎn ultimele luni m-am implicat și pe partea tehnică: identificarea și rezolvarea bug-urilor, debugging și dezvoltare pe proiecte interne.",
+      "description": "Emit certificate digitale calificate și creez semnături electronice calificate pentru clienți.\nGestionez vânzările și relația cu clienții, de la primul contact până la emiterea certificatului și suport.\nÎn ultimele luni m-am implicat și pe partea tehnică: identificarea și rezolvarea bug-urilor, debugging și dezvoltare pe proiecte interne.\nCrypto Officer (CO).",
       "domain": "alfasign.ro",
       "logo": ""
     },
     {
-      "role": "Operațiuni, vânzări & logistică",
+      "role": "Operațiuni, vânzări, marketing & logistică",
       "company": "Horeca4You",
       "period": "2024 – sept. 2026",
-      "description": "Principala persoană responsabilă de operațiunile zilnice.\nGestionarea vânzărilor, facturare și logistică, de la comandă până la livrare.",
+      "description": "Principala persoană responsabilă de operațiunile zilnice.\nGestionarea vânzărilor, facturare și logistică, de la comandă până la livrare.\nPromovare prin e-mail marketing și reprezentarea companiei la evenimente.\nAdministrarea și actualizarea site-ului.",
       "domain": "horeca4you.ro",
       "logo": ""
     }
@@ -84,22 +84,23 @@
   ],
   "projects": [
     {
-      "title": "Proiectul 1",
-      "description": "Descriere scurtă: problema, soluția și rezultatul.",
+      "title": "EtaPro Cleaning",
+      "description": "Site de prezentare pentru EtaPro Cleaning, realizat de la design până la publicare.",
       "tags": [
-        "Tag 1",
-        "Tag 2"
+        "Web design",
+        "Dezvoltare"
       ],
-      "link": "",
+      "link": "https://etaprocleaning.husanudaniel.ro",
       "image": ""
     },
     {
-      "title": "Proiectul 2",
-      "description": "Descriere scurtă: problema, soluția și rezultatul.",
+      "title": "Sanitas",
+      "description": "Site de prezentare pentru Sanitas, realizat de la design până la publicare.",
       "tags": [
-        "Tag 1"
+        "Web design",
+        "Dezvoltare"
       ],
-      "link": "",
+      "link": "https://sanitas.husanudaniel.ro",
       "image": ""
     }
   ],

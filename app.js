@@ -211,9 +211,11 @@
     var track = $("#projects");
     track.innerHTML = projects.map(function (pr, i) {
       var img = safeUrl(pr.image), link = safeUrl(pr.link);
-      var preview = img
-        ? '<div class="preview"><img src="' + esc(img) + '" alt="' + esc(pr.title) + '" loading="lazy"><span class="idx">' + String(i + 1).padStart(2, "0") + "</span></div>"
-        : '<div class="preview fallback"><span class="letter">' + esc(String(pr.title || "?").trim().charAt(0).toUpperCase()) + '</span><span class="idx">' + String(i + 1).padStart(2, "0") + "</span></div>";
+      // Preview: uploaded image, else a live screenshot of the project link, else the gradient + initial.
+      var shot = img || (/^https?:\/\//i.test(link) ? "https://s0.wp.com/mshots/v1/" + encodeURIComponent(link) + "?w=1200&h=900" : "");
+      var preview = '<div class="preview fallback"><span class="letter">' + esc(String(pr.title || "?").trim().charAt(0).toUpperCase()) + "</span>" +
+        (shot ? '<img src="' + esc(shot) + '" alt="' + esc(pr.title) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "") +
+        '<span class="idx">' + String(i + 1).padStart(2, "0") + "</span></div>";
       var tags = list(pr.tags).filter(Boolean);
       return '<article class="card slide" aria-roledescription="slide" aria-label="' + (i + 1) + " din " + projects.length + '">' + preview +
         '<div class="body"><h3>' + esc(pr.title) + "</h3>" +
