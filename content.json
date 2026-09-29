@@ -94,14 +94,15 @@
       "image": ""
     },
     {
-      "title": "Sanitas",
-      "description": "Site de prezentare pentru Sanitas, realizat de la design până la publicare.",
+      "title": "Sanitas CAR",
+      "description": "Site pentru casa de ajutor reciproc a angajaților din sănătate. Simulator de împrumut: alegi suma și perioada și vezi rata lunară pe loc. Cererea se completează online, iar documentul oficial ajunge instant pe e-mail și la sediu.",
       "tags": [
         "Web design",
-        "Dezvoltare"
+        "Simulator rate",
+        "Cerere online"
       ],
       "link": "https://sanitas.husanudaniel.ro",
-      "image": ""
+      "image": "assets/projects/sanitas.jpg"
     }
   ],
   "footer": "Toate drepturile rezervate."
