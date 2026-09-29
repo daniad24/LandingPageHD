@@ -85,12 +85,12 @@
   "projects": [
     {
       "title": "EtaPro Cleaning",
-      "description": "Site de prezentare pentru EtaPro Cleaning, realizat de la design până la publicare.",
+      "description": "Site de prezentare pentru o firmă de servicii de curățenie. Proiect în lucru, lansarea urmează în curând.",
       "tags": [
-        "Web design",
-        "Dezvoltare"
+        "În lucru",
+        "Web design"
       ],
-      "link": "https://etaprocleaning.husanudaniel.ro",
+      "link": "",
       "image": ""
     },
     {
