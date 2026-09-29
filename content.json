@@ -1,8 +1,8 @@
 {
   "profile": {
     "name": "Daniel Husanu",
-    "title": "Web Dev | UI/UX design | ",
-    "tagline": "O frază scurtă despre ce faci și cum îi ajuți pe clienți.",
+    "title": "Web Dev · UI/UX Design",
+    "tagline": "Creez site-uri moderne, rapide și ușor de folosit și ajut afacerile să arate bine online.",
     "location": "Bucuresti, România",
     "photo": "assets/uploads/1790621745756-img-8680.jpg",
     "email": "contact@husanudaniel.ro",
@@ -22,7 +22,7 @@
       "url": "https://www.linkedin.com/"
     }
   ],
-  "about": "Scrie aici câteva rânduri despre tine: experiența, domeniile în care lucrezi și ce te motivează.\n\nPoți folosi mai multe paragrafe, separate printr-un rând gol.",
+  "about": "Construiesc site-uri moderne și ușor de folosit, acolo unde tehnologia se întâlnește cu business-ul.\n\nSunt student la Computer Science for Business Management, la Universitatea Româno-Americană din București, și am 4 ani de experiență practică. La AlfaTrust – Alfasign lucrez cu certificate digitale calificate și semnături electronice, mă ocup de vânzări și de relația cu clienții, iar în ultima vreme m-am implicat și în debugging și dezvoltare. La Horeca4You am coordonat operațiunile zilnice: vânzări, facturare, logistică, e-mail marketing și site-ul companiei.\n\nÎmi place să înțeleg nevoia clientului și să o transform într-o soluție simplă și clară: un site rapid, un proces mai eficient sau o experiență mai plăcută pentru utilizatori. Mă motivează lucrurile bine făcute, care chiar îi ajută pe oameni.",
   "stats": [
     {
       "value": "4",
@@ -66,19 +66,33 @@
   ],
   "skills": [
     {
-      "group": "Tehnic",
+      "group": "Web & design",
       "items": [
-        "Competența 1",
-        "Competența 2",
-        "Competența 3"
+        "HTML & CSS",
+        "JavaScript",
+        "Design responsive",
+        "UI/UX design",
+        "Debugging",
+        "Git & GitHub"
+      ]
+    },
+    {
+      "group": "Certificare digitală",
+      "items": [
+        "Certificate digitale calificate",
+        "Semnături electronice calificate",
+        "Standardul eIDAS"
       ]
     },
     {
       "group": "Business",
       "items": [
-        "Consultanță",
-        "Analiză",
-        "Management de proiect"
+        "Vânzări",
+        "Relația cu clienții",
+        "E-mail marketing",
+        "Facturare",
+        "Logistică",
+        "Reprezentare la evenimente"
       ]
     }
   ],
