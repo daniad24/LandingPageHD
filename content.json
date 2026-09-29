@@ -39,23 +39,29 @@
   ],
   "experience": [
     {
-      "role": "Cyber  ",
-      "company": "Alfatrust - Alfasign",
+      "role": "Crypto Officer (CO) · Certificate digitale calificate",
+      "company": "AlfaTrust Certification – Alfasign",
       "period": "2023 – prezent",
-      "description": "Responsabilități principale și rezultate obținute."
+      "description": "Emit certificate digitale calificate și creez semnături electronice calificate pentru clienți, ca Crypto Officer (CO) în cadrul unui prestator acreditat de servicii de încredere (eIDAS).\nGestionez vânzările și relația cu clienții, de la primul contact până la emiterea certificatului și suport.\nÎn ultimele luni m-am implicat și pe partea tehnică: identificarea și rezolvarea bug-urilor, debugging și dezvoltare pe proiecte interne.",
+      "domain": "alfasign.ro",
+      "logo": ""
     },
     {
-      "role": "Funcția anterioară",
-      "company": "Compania anterioară",
-      "period": "2016 – 2020",
-      "description": "Ce ai făcut acolo, pe scurt."
+      "role": "Operațiuni, vânzări & logistică",
+      "company": "Horeca4You",
+      "period": "2024 – sept. 2026",
+      "description": "Principala persoană responsabilă de operațiunile zilnice.\nGestionarea vânzărilor, facturare și logistică, de la comandă până la livrare.",
+      "domain": "horeca4you.ro",
+      "logo": ""
     }
   ],
   "education": [
     {
-      "title": "Computer",
-      "institution": "Universitatea",
-      "period": "2012 – 2016"
+      "title": "Computer Science for Business Management (Informatică Managerială)",
+      "institution": "Universitatea Româno-Americană, București",
+      "period": "oct. 2022 – iun. 2027",
+      "domain": "rau.ro",
+      "logo": ""
     }
   ],
   "skills": [

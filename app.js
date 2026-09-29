@@ -239,13 +239,32 @@
     toggleSection("competente", !all.length);
 
     // Timeline
+    function initials(name) {
+      return String(name || "?").replace(/[^\p{L}\p{N}\s-]/gu, " ").split(/[\s-]+/).filter(Boolean)
+        .slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join("") || "?";
+    }
+    function logoHtml(it, name) {
+      var domain = String(it.domain || "").trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+      var src = safeUrl(it.logo) || (domain ? "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(domain) + "&sz=128" : "");
+      var mono = '<span class="t-mono">' + esc(initials(name)) + "</span>";
+      if (!src) return '<div class="t-logo">' + mono + "</div>";
+      return '<div class="t-logo"><img src="' + esc(src) + '" alt="" loading="lazy" referrerpolicy="no-referrer" ' +
+        'onerror="this.parentNode.classList.add(\'fail\')">' + mono + "</div>";
+    }
+    function descHtml(text) {
+      var lines = String(text || "").split(/\n+/).map(function (l) { return l.replace(/^[\s•\-–]+/, "").trim(); }).filter(Boolean);
+      if (!lines.length) return "";
+      if (lines.length === 1) return '<p class="desc">' + esc(lines[0]) + "</p>";
+      return '<ul class="desc">' + lines.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul>";
+    }
     function timeline(items, head, sub) {
       return items.map(function (it, i) {
-        return '<li class="card reveal" style="--d:' + (i % 4) + '">' +
+        return '<li class="card reveal" style="--d:' + (i % 4) + '">' + logoHtml(it, it[sub] || it[head]) +
+          '<div class="t-body">' +
           (it.period ? '<span class="period">' + esc(it.period) + "</span>" : "") +
           "<h4>" + esc(String(it[head] || "").trim()) + "</h4>" +
           (it[sub] ? '<span class="org">' + esc(it[sub]) + "</span>" : "") +
-          (it.description ? '<p class="desc">' + esc(it.description) + "</p>" : "") + "</li>";
+          descHtml(it.description) + "</div></li>";
       }).join("");
     }
     var exp = list(c.experience), edu = list(c.education);

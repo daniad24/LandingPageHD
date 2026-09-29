@@ -15,19 +15,19 @@
     education: "Educație", institution: "Instituție",
     skills: "Competențe", group: "Categorie", items: "Elemente",
     projects: "Proiecte", tags: "Etichete", link: "Link", image: "Imagine",
-    footer: "Text subsol"
+    footer: "Text subsol", logo: "Logo (opțional, încarcă o imagine)", domain: "Site-ul firmei (pentru logo automat)"
   };
   var TEMPLATES = {
     social: { label: "", url: "" },
     stats: { value: "", label: "" },
-    experience: { role: "", company: "", period: "", description: "" },
-    education: { title: "", institution: "", period: "" },
+    experience: { role: "", company: "", period: "", description: "", domain: "", logo: "" },
+    education: { title: "", institution: "", period: "", domain: "", logo: "" },
     skills: { group: "", items: [] },
     projects: { title: "", description: "", tags: [], link: "", image: "" },
     items: "", tags: ""
   };
   var MULTILINE = { about: 1, description: 1, tagline: 1 };
-  var FILE_FIELDS = { photo: "image/*", image: "image/*", cvFile: "application/pdf" };
+  var FILE_FIELDS = { photo: "image/*", image: "image/*", logo: "image/*", cvFile: "application/pdf" };
 
   var cfg = {}, data = null, sha = null, dirty = false;
 
@@ -176,7 +176,7 @@
   }
 
   // ---- uploads ----
-  function resizeImage(file) {
+  function resizeImage(file, type) {
     return new Promise(function (resolve, reject) {
       var img = new Image();
       img.onload = function () {
@@ -185,7 +185,7 @@
         c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
         c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
         URL.revokeObjectURL(img.src);
-        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("Conversie eșuată")); }, "image/jpeg", 0.85);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("Conversie eșuată")); }, type, 0.85);
       };
       img.onerror = function () { reject(new Error("Imagine invalidă")); };
       img.src = URL.createObjectURL(file);
@@ -194,9 +194,11 @@
   function upload(file) {
     var isImg = /^image\//.test(file.type) && file.type !== "image/svg+xml" && file.type !== "image/gif";
     var base = file.name.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "fisier";
-    var ext = isImg ? "jpg" : (file.name.split(".").pop() || "bin").toLowerCase();
+    var keepAlpha = /^image\/(png|webp)$/.test(file.type);
+    var outType = keepAlpha ? "image/png" : "image/jpeg";
+    var ext = isImg ? (keepAlpha ? "png" : "jpg") : (file.name.split(".").pop() || "bin").toLowerCase();
     var path = UPLOAD_DIR + "/" + Date.now() + "-" + base + "." + ext;
-    return (isImg ? resizeImage(file) : Promise.resolve(file))
+    return (isImg ? resizeImage(file, outType) : Promise.resolve(file))
       .then(function (blob) { return blob.arrayBuffer(); })
       .then(function (buf) { return putFile(path, bytesToB64(new Uint8Array(buf)), "Încărcare " + path); })
       .then(function () { return path; });
