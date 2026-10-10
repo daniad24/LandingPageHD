@@ -2,14 +2,14 @@
   "profile": {
     "name": "Daniel Husanu",
     "title": "Web Dev · UI/UX Design",
-    "tagline": "Creez site-uri moderne, rapide și ușor de folosit și ajut afacerile să arate bine online.",
+    "tagline": "Web developer și student la Informatică Managerială, cu experiență în certificare digitală, operațiuni și relația cu clienții.",
     "location": "Bucuresti, România",
     "photo": "assets/uploads/1790621745756-img-8680.jpg",
     "email": "contact@husanudaniel.ro",
     "phone": "+40 700 000 000",
     "whatsapp": "40700000000",
     "website": "https://husanudaniel.ro",
-    "availability": "Disponibil pentru proiecte noi",
+    "availability": "Deschis la noi oportunități",
     "cvFile": ""
   },
   "social": [
@@ -99,24 +99,30 @@
   "projects": [
     {
       "title": "EtaPro Cleaning",
-      "description": "Site de prezentare pentru o firmă de servicii de curățenie. Proiect în lucru, lansarea urmează în curând.",
+      "description": "Site de prezentare pentru o firmă de servicii de curățenie.",
+      "details": "",
       "tags": [
-        "În lucru",
-        "Web design"
+        "Web design",
+        "Dezvoltare"
       ],
-      "link": "",
-      "image": ""
+      "link": "https://etaprocleaning.vercel.app",
+      "image": "",
+      "gallery": []
     },
     {
       "title": "Sanitas CAR",
-      "description": "Site pentru casa de ajutor reciproc a angajaților din sănătate. Simulator de împrumut: alegi suma și perioada și vezi rata lunară pe loc. Cererea se completează online, iar documentul oficial ajunge instant pe e-mail și la sediu.",
+      "description": "Site pentru casa de ajutor reciproc a angajaților din sănătate, cu simulator de împrumut și cerere online.",
+      "details": "Am realizat site-ul pentru Sanitas CAR, casa de ajutor reciproc a angajaților din sănătate din București.\n\nFuncția principală e simulatorul de împrumut: utilizatorul alege suma și perioada de rambursare și vede imediat rata lunară, calculată transparent. Cererea se completează online, iar documentul oficial ajunge instant pe e-mailul membrului și la sediul Sanitas CAR.",
       "tags": [
         "Web design",
         "Simulator rate",
         "Cerere online"
       ],
       "link": "https://sanitas.husanudaniel.ro",
-      "image": "assets/projects/sanitas.jpg"
+      "image": "assets/projects/sanitas.jpg",
+      "gallery": [
+        "assets/projects/sanitas-full.jpg"
+      ]
     }
   ],
   "footer": "Toate drepturile rezervate."
