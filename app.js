@@ -18,6 +18,8 @@
   ICONS.facebook = '<svg viewBox="0 0 24 24"><path d="M14 13.5h2.5l1-4H14v-2c0-1 0-2 2-2h1.5V2.1A21 21 0 0 0 14.6 2C12 2 10 3.7 10 6.7v2.8H7v4h3V22h4z"/></svg>';
   ICONS.tiktok = '<svg viewBox="0 0 24 24"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg>';
   ICONS.x = '<svg viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.8 7.7 8 10.3h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.9zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>';
+  ICONS.share = '<svg viewBox="0 0 24 24"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg>';
+  ICONS.close = '<svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4l5.6 5.6L5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6z"/></svg>';
   ICONS.chevron = '<svg viewBox="0 0 24 24"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg>';
 
   var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -158,6 +160,94 @@
     update();
   }
 
+
+  // ---- share ----
+  function shareSite(p) {
+    var url = location.origin + location.pathname;
+    var data = { title: p.name || document.title, text: [p.name, p.title].filter(Boolean).join(" – "), url: url };
+    if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(function () { toast("Link copiat ✓"); }, function () { window.prompt("Copiază linkul:", url); });
+    } else {
+      window.prompt("Copiază linkul:", url);
+    }
+  }
+
+  // ---- project bottom sheet ----
+  var sheet, sheetBody, sheetBackdrop, lastFocus;
+  function shotFor(link) { return /^https?:\/\//i.test(link) ? "https://s0.wp.com/mshots/v1/" + encodeURIComponent(link) + "?w=1200&h=900" : ""; }
+  function buildSheet() {
+    sheetBackdrop = document.createElement("div");
+    sheetBackdrop.className = "sheet-backdrop";
+    sheet = document.createElement("section");
+    sheet.className = "sheet";
+    sheet.setAttribute("role", "dialog");
+    sheet.setAttribute("aria-modal", "true");
+    sheet.setAttribute("aria-labelledby", "sheetTitle");
+    sheet.innerHTML = '<div class="sheet-grab"><span></span></div><button class="sheet-close" type="button" aria-label="Închide">' + ICONS.close + '</button><div class="sheet-body"></div>';
+    document.body.appendChild(sheetBackdrop);
+    document.body.appendChild(sheet);
+    sheetBody = sheet.querySelector(".sheet-body");
+    sheetBackdrop.addEventListener("click", function () { closeSheet(); });
+    sheet.querySelector(".sheet-close").addEventListener("click", function () { closeSheet(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheet.classList.contains("open")) closeSheet(); });
+    window.addEventListener("popstate", function () { if (sheet.classList.contains("open")) closeSheet(true); });
+
+    // drag down to close (from the grab bar / top of the sheet, or anywhere when scrolled to top)
+    var startY = null, dy = 0;
+    sheet.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && !e.target.closest(".sheet-grab")) return;
+      if (sheetBody.scrollTop > 0 && !e.target.closest(".sheet-grab")) return;
+      if (e.target.closest(".sheet-gallery")) return;
+      startY = e.clientY; dy = 0; sheet.style.transition = "none";
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (startY === null) return;
+      dy = Math.max(0, e.clientY - startY);
+      sheet.style.setProperty("--drag", dy + "px");
+    });
+    function end() {
+      if (startY === null) return;
+      startY = null; sheet.style.transition = ""; sheet.style.removeProperty("--drag");
+      if (dy > 110) closeSheet();
+    }
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+  }
+  function openSheet(pr) {
+    if (!sheet) buildSheet();
+    var link = safeUrl(pr.link);
+    var imgs = [safeUrl(pr.image)].concat(list(pr.gallery).map(safeUrl)).filter(Boolean)
+      .filter(function (v, i, a) { return a.indexOf(v) === i; });
+    if (!imgs.length && shotFor(link)) imgs.push(shotFor(link));
+    var tags = list(pr.tags).filter(Boolean);
+    sheetBody.innerHTML =
+      (imgs.length ? '<div class="sheet-gallery' + (imgs.length > 1 ? " multi" : "") + '">' + imgs.map(function (src) {
+        return '<figure><img src="' + esc(src) + '" alt="' + esc(pr.title) + '" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></figure>';
+      }).join("") + "</div>" : "") +
+      '<div class="sheet-content">' +
+      (tags.length ? '<div class="chips">' + tags.map(function (t) { return '<span class="chip">' + esc(t) + "</span>"; }).join("") + "</div>" : "") +
+      '<h3 id="sheetTitle">' + esc(pr.title) + "</h3>" +
+      '<div class="sheet-text">' + paragraphs(pr.details || pr.description) + "</div>" +
+      (link ? '<a class="btn primary sheet-cta" href="' + esc(link) + '" target="_blank" rel="noopener">Deschide site-ul ' + ICONS.arrow + "</a>" : "") +
+      "</div>";
+    sheetBody.scrollTop = 0;
+    lastFocus = document.activeElement;
+    document.documentElement.classList.add("sheet-lock");
+    sheetBackdrop.classList.add("open");
+    sheet.classList.add("open");
+    history.pushState({ sheet: 1 }, "");
+    setTimeout(function () { sheet.querySelector(".sheet-close").focus({ preventScroll: true }); }, 50);
+  }
+  function closeSheet(fromPop) {
+    if (!sheet || !sheet.classList.contains("open")) return;
+    sheet.classList.remove("open");
+    sheetBackdrop.classList.remove("open");
+    document.documentElement.classList.remove("sheet-lock");
+    if (!fromPop && history.state && history.state.sheet) history.back();
+    if (lastFocus) lastFocus.focus({ preventScroll: true });
+  }
+
   // ---- render ----
   function render(c) {
     var p = c.profile || {};
@@ -188,7 +278,9 @@
     if (tel) actions.push('<a class="btn primary" href="tel:' + esc(tel) + '">' + ICONS.phone + "Sună-mă</a>");
     if (p.email) actions.push('<a class="btn" href="mailto:' + esc(p.email) + '">' + ICONS.mail + "Scrie-mi</a>");
     if (safeUrl(p.cvFile)) actions.push('<a class="btn dark" href="' + esc(safeUrl(p.cvFile)) + '" download>' + ICONS.download + "CV</a>");
+    actions.push('<button type="button" class="btn" id="shareBtn">' + ICONS.share + "Distribuie</button>");
     $("#actions").innerHTML = actions.join("");
+    $("#shareBtn").addEventListener("click", function () { shareSite(p); });
 
     $("#social").innerHTML = list(c.social).filter(function (s) { return safeUrl(s.url); }).map(function (s) {
       var brand = (String(s.label) + " " + String(s.url)).toLowerCase().match(/instagram|linkedin|github|facebook|tiktok/);
@@ -214,20 +306,28 @@
     track.innerHTML = projects.map(function (pr, i) {
       var img = safeUrl(pr.image), link = safeUrl(pr.link);
       // Preview: uploaded image, else a live screenshot of the project link, else the gradient + initial.
-      var shot = img || (/^https?:\/\//i.test(link) ? "https://s0.wp.com/mshots/v1/" + encodeURIComponent(link) + "?w=1200&h=900" : "");
+      var shot = img || shotFor(link);
       var preview = '<div class="preview fallback"><span class="letter">' + esc(String(pr.title || "?").trim().charAt(0).toUpperCase()) + "</span>" +
         (shot ? '<img src="' + esc(shot) + '" alt="' + esc(pr.title) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "") +
         '<span class="idx">' + String(i + 1).padStart(2, "0") + "</span></div>";
       var tags = list(pr.tags).filter(Boolean);
-      return '<article class="card slide" aria-roledescription="slide" aria-label="' + (i + 1) + " din " + projects.length + '">' + preview +
+      return '<article class="card slide" data-i="' + i + '" tabindex="0" aria-roledescription="slide" aria-label="' + esc(pr.title) + ", " + (i + 1) + " din " + projects.length + '">' + preview +
         '<div class="body"><h3>' + esc(pr.title) + "</h3>" +
         (pr.description ? "<p>" + esc(pr.description) + "</p>" : "") +
         '<div class="foot"><div class="chips">' + tags.map(function (t) { return '<span class="chip">' + esc(t) + "</span>"; }).join("") + "</div>" +
-        (link ? '<a class="go" href="' + esc(link) + '" target="_blank" rel="noopener">Vezi ' + ICONS.arrow + "</a>" : "") +
+        '<span class="more">Detalii ' + ICONS.chevron + "</span>" +
         "</div></div></article>";
     }).join("");
     toggleSection("proiecte", !projects.length);
     if (projects.length) setupCarousel(track, projects.length);
+    track.onclick = function (e) {
+      var card = e.target.closest(".slide");
+      if (card && !e.target.closest("a")) openSheet(projects[Number(card.getAttribute("data-i"))]);
+    };
+    track.onkeydown = function (e) {
+      var card = e.target.closest(".slide");
+      if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openSheet(projects[Number(card.getAttribute("data-i"))]); }
+    };
 
     // Skills: marquee + groups
     var skills = list(c.skills);

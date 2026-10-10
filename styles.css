@@ -38,7 +38,7 @@ body {
     linear-gradient(180deg, #f6ecdf 0%, var(--bg) 40%, var(--bg-deep) 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+
 }
 /* film grain */
 body::before {
@@ -110,7 +110,7 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
   .nav-cta { margin-left: auto; }
 }
 
-main { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+main { max-width: 1120px; margin: 0 auto; padding: 0 20px; overflow-x: clip; }
 
 /* ============ Reveal animations ============ */
 .js .reveal { opacity: 0; transform: translateY(26px); filter: blur(6px); }
@@ -301,6 +301,64 @@ main { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
 .dots button.on { width: 30px; background: var(--accent); }
 .counter { font-family: var(--sans); font-size: 1rem; letter-spacing: .04em; color: var(--muted); font-variant-numeric: tabular-nums; }
 .counter b { color: var(--text); font-weight: 600; }
+
+/* ============ Project detail sheet ============ */
+.slide { cursor: pointer; -webkit-user-select: none; user-select: none; }
+.slide:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 3px; }
+.slide .more {
+  display: inline-flex; align-items: center; gap: 2px; padding: 9px 12px 9px 16px; border-radius: 999px;
+  background: var(--ink); color: var(--ink-text); font-weight: 600; font-size: .88rem; white-space: nowrap;
+  transition: gap .3s var(--ease);
+}
+.slide .more svg { width: 18px; height: 18px; }
+.slide:hover .more { gap: 6px; }
+
+html.sheet-lock, html.sheet-lock body { overflow: hidden; }
+.sheet-backdrop {
+  position: fixed !important; inset: 0; z-index: 70 !important; background: rgba(31, 22, 17, .45);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity .4s var(--ease);
+}
+.sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: fixed !important; z-index: 71 !important; left: 0; right: 0; bottom: 0;
+  max-height: 92svh; display: flex; flex-direction: column;
+  background: var(--surface-solid); border-radius: 30px 30px 0 0;
+  box-shadow: 0 -20px 60px -20px rgba(31, 22, 17, .5);
+  transform: translateY(105%); transition: transform .55s cubic-bezier(.2, .9, .25, 1);
+  padding-bottom: env(safe-area-inset-bottom); touch-action: pan-y;
+}
+.sheet.open { transform: translateY(var(--drag, 0px)); }
+.sheet-grab { padding: 12px 0 6px; display: grid; place-items: center; cursor: grab; touch-action: none; }
+.sheet-grab span { width: 44px; height: 5px; border-radius: 999px; background: rgba(43, 29, 20, .2); }
+.sheet-close {
+  position: absolute; top: 12px; right: 14px; z-index: 2; width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--border); background: rgba(251, 244, 234, .9); color: var(--text);
+  display: grid; place-items: center; cursor: pointer;
+}
+.sheet-body { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.sheet-gallery {
+  display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  padding: 6px 20px 4px; touch-action: pan-x pan-y;
+}
+.sheet-gallery::-webkit-scrollbar { display: none; }
+.sheet-gallery figure {
+  margin: 0; flex: 0 0 100%; scroll-snap-align: center; border-radius: 20px; overflow: hidden;
+  background: var(--surface-2); border: 1px solid var(--border); max-height: 58svh;
+}
+.sheet-gallery.multi figure { flex-basis: 78%; }
+.sheet-gallery img { width: 100%; height: 100%; max-height: 58svh; object-fit: cover; object-position: top center; display: block; }
+.sheet-content { padding: 18px 22px 28px; max-width: 720px; }
+.sheet-content .chips { margin-bottom: 12px; }
+.sheet-content h3 { margin: 0 0 12px; font-size: 1.8rem; font-weight: 600; line-height: 1.15; }
+.sheet-text p { margin: 0 0 12px; color: var(--muted); font-size: 1.02rem; }
+.sheet-cta { margin-top: 10px; width: 100%; }
+.sheet-cta svg { width: 18px; height: 18px; }
+@media (min-width: 761px) {
+  .sheet { left: 50%; right: auto; width: min(760px, 94vw); bottom: 24px; border-radius: 30px; transform: translate(-50%, 110%); max-height: 88vh; }
+  .sheet.open { transform: translate(-50%, var(--drag, 0px)); }
+  .sheet-cta { width: auto; }
+}
 
 /* ============ Skills ============ */
 .section-bleed { padding-top: 96px; }

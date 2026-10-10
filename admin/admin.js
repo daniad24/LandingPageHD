@@ -15,7 +15,7 @@
     education: "Educație", institution: "Instituție",
     skills: "Competențe", group: "Categorie", items: "Elemente",
     projects: "Proiecte", tags: "Etichete", link: "Link", image: "Imagine",
-    footer: "Text subsol", logo: "Logo (opțional, încarcă o imagine)", domain: "Site-ul firmei (pentru logo automat)"
+    footer: "Text subsol", logo: "Logo (opțional, încarcă o imagine)", details: "Descriere completă (apare la „Detalii”)", gallery: "Galerie capturi (apar la „Detalii”)", domain: "Site-ul firmei (pentru logo automat)"
   };
   var TEMPLATES = {
     social: { label: "", url: "" },
@@ -23,10 +23,10 @@
     experience: { role: "", company: "", period: "", description: "", domain: "", logo: "" },
     education: { title: "", institution: "", period: "", domain: "", logo: "" },
     skills: { group: "", items: [] },
-    projects: { title: "", description: "", tags: [], link: "", image: "" },
-    items: "", tags: ""
+    projects: { title: "", description: "", details: "", tags: [], link: "", image: "", gallery: [] },
+    items: "", tags: "", gallery: ""
   };
-  var MULTILINE = { about: 1, description: 1, tagline: 1 };
+  var MULTILINE = { about: 1, description: 1, tagline: 1, details: 1 };
   var FILE_FIELDS = { photo: "image/*", image: "image/*", logo: "image/*", cvFile: "application/pdf" };
 
   var cfg = {}, data = null, sha = null, dirty = false;
@@ -180,7 +180,7 @@
     return new Promise(function (resolve, reject) {
       var img = new Image();
       img.onload = function () {
-        var max = 1400, s = Math.min(1, max / Math.max(img.width, img.height));
+        var max = 1200, s = Math.min(1, max / Math.max(img.width, img.height));
         var c = document.createElement("canvas");
         c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
         c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
@@ -252,6 +252,17 @@
       });
       box.appendChild(el("button", { type: "button", class: "btn add", text: "+ Adaugă",
         onclick: function () { parent[key].push(""); markDirty(); draw(); box.querySelectorAll("input")[parent[key].length - 1].focus(); } }));
+      if (key === "gallery") {
+        var picker = el("input", { type: "file", accept: "image/*", hidden: "" });
+        var up = el("button", { type: "button", class: "btn add", text: "Încarcă imagine", onclick: function () { picker.click(); } });
+        picker.addEventListener("change", function () {
+          var f = picker.files[0]; if (!f) return;
+          up.disabled = true; up.textContent = "Se încarcă…";
+          upload(f).then(function (path) { parent[key].push(path); markDirty(); draw(); setStatus("Imagine încărcată. Apasă Salvează."); })
+            .catch(function (e) { setStatus("Eroare la încărcare: " + errMsg(e)); up.disabled = false; up.textContent = "Încarcă imagine"; });
+        });
+        box.appendChild(up); box.appendChild(picker);
+      }
     }
     draw();
     return el("div", {}, [el("label", { text: label(key) }), box]);
