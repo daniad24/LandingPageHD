@@ -25,7 +25,7 @@
 .contact .rows { grid-template-columns: repeat(3, 1fr); }
 
 /* ---------- Despre / Competențe: one tile, two swipeable pages ---------- */
-.swipe { grid-column: span 12; padding: 18px 0 20px; }
+.swipe { grid-column: span 12; padding: 18px 0 20px; contain: none; }
 .sw-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 22px 14px; }
 .seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; min-width: 250px;
   background: rgba(255, 255, 255, .4); box-shadow: inset 0 1px 2px rgba(70, 40, 15, .12), inset 0 0 0 1px rgba(255, 255, 255, .5); }
@@ -36,7 +36,7 @@
 .sw-hint { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .sw-hint svg { width: 16px; height: 16px; animation: nudge 2.4s var(--ease) infinite; }
 @keyframes nudge { 0%, 60%, 100% { transform: none; } 30% { transform: translateX(5px); } }
-.sw-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; align-items: flex-start; transition: height .4s var(--out); -webkit-overflow-scrolling: touch; }
+.sw-track { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; touch-action: pan-x pan-y; scrollbar-width: none; overscroll-behavior-x: contain; align-items: flex-start; transition: height .4s var(--out); -webkit-overflow-scrolling: touch; }
 .sw-track::-webkit-scrollbar { display: none; }
 .sw-page { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 22px; min-width: 0; }
 .sw-page.about p { margin: 0 0 12px; color: var(--muted); }
@@ -134,26 +134,38 @@ CV.load().then(function (c) {
 
   /* ---------- swipe pages ---------- */
   var track = document.getElementById("swTrack"), seg = document.getElementById("seg"), pages = track.children, dots = document.getElementById("swDots").children, pg = 0;
-  function fitHeight() { track.style.height = pages[pg].offsetHeight + "px"; }
-  var swQueued = false;
-  track.addEventListener("scroll", function () { if (!swQueued) { swQueued = true; requestAnimationFrame(onSwipe); } }, { passive: true });
+  var settleTimer, swQueued = false;
+  function heights() { return [].map.call(pages, function (x) { return x.offsetHeight; }); }
+  // While a swipe is in progress the tile keeps the taller of the two pages in view,
+  // so nothing gets clipped; it only shrinks/grows to the active page once the swipe has settled.
+  function setHeight(px) { if (track.style.height !== px + "px") track.style.height = px + "px"; }
+  function settle() {
+    var f = track.scrollLeft / track.clientWidth, i = Math.round(f);
+    track.scrollTop = 0;
+    if (Math.abs(f - i) > .02) return; // finger still holding the page mid-way: keep both pages fully visible
+    setHeight(heights()[i]);
+  }
   function onSwipe() {
     swQueued = false;
-    var f = track.scrollLeft / track.clientWidth;
-    seg.style.setProperty("--p", Math.max(0, Math.min(1, f)));
+    var f = Math.max(0, Math.min(pages.length - 1, track.scrollLeft / track.clientWidth));
+    seg.style.setProperty("--p", f);
+    var h = heights(), lo = Math.floor(f), hi = Math.ceil(f);
+    setHeight(Math.max(h[lo], h[hi]));
     var now = Math.round(f);
     if (now !== pg) {
       pg = now;
       seg.querySelectorAll("button").forEach(function (b, i) { b.classList.toggle("on", i === pg); });
       [].forEach.call(dots, function (d, i) { d.classList.toggle("on", i === pg); });
-      fitHeight();
     }
+    clearTimeout(settleTimer); settleTimer = setTimeout(settle, 140);
   }
+  track.addEventListener("scroll", function () { if (!swQueued) { swQueued = true; requestAnimationFrame(onSwipe); } }, { passive: true });
+  if ("onscrollend" in window) track.addEventListener("scrollend", function () { clearTimeout(settleTimer); settle(); });
   seg.addEventListener("click", function (ev) {
     var b = ev.target.closest("[data-pg]"); if (!b) return;
     track.scrollTo({ left: +b.getAttribute("data-pg") * track.clientWidth, behavior: "smooth" });
   });
-  addEventListener("resize", fitHeight); addEventListener("load", fitHeight); fitHeight();
+  addEventListener("resize", settle); addEventListener("load", settle); settle();
 
   /* ---------- coverflow ---------- */
   var stage = document.getElementById("cfStage");
