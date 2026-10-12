@@ -420,27 +420,6 @@
 
   $("#year").textContent = new Date().getFullYear();
 
-  // ---- theme: day / „după apus” ----
-  var rootEl = document.documentElement, themeMeta = document.querySelector('meta[name="theme-color"]');
-  function applyTheme(t) {
-    rootEl.setAttribute("data-theme", t);
-    if (themeMeta) themeMeta.setAttribute("content", t === "dark" ? "#17110d" : "#f4e9da");
-  }
-  applyTheme(rootEl.getAttribute("data-theme") || "light");
-  $("#themeBtn").addEventListener("click", function () {
-    var next = rootEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    applyTheme(next);
-    try { localStorage.setItem("theme", next); } catch (e) {}
-  });
-  if (window.matchMedia) {
-    var mq = matchMedia("(prefers-color-scheme: dark)");
-    var follow = function (e) {
-      var saved = null; try { saved = localStorage.getItem("theme"); } catch (err) {}
-      if (!saved) applyTheme(e.matches ? "dark" : "light");
-    };
-    if (mq.addEventListener) mq.addEventListener("change", follow); else if (mq.addListener) mq.addListener(follow);
-  }
-
   fetch("content.json", { cache: "no-store" })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function (c) { render(c); setTimeout(onScroll, 600); })
