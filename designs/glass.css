@@ -167,3 +167,47 @@ svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
 .press { will-change: auto; }
 @media (hover: none) { .press:hover { transform: none; } .press:hover .go { transform: none; } }
 .profile .status { align-self: flex-start; }
+
+/* ================= Dark theme (only when the visitor picks it; light is the default) ================= */
+.theme-btn { width: 40px; height: 40px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; color: var(--text);
+  background: rgba(255, 255, 255, .55); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), inset 0 0 0 1px rgba(255, 255, 255, .5); transition: transform .35s var(--spring); }
+.theme-btn:active { transform: scale(.88); }
+.theme-btn svg { width: 19px; height: 19px; transition: transform .5s var(--out), opacity .3s; }
+.theme-btn .sun { position: absolute; opacity: 0; transform: rotate(-90deg) scale(.6); }
+.theme-btn { position: relative; }
+.bar .right { display: flex; align-items: center; gap: 6px; }
+[data-theme="dark"] .theme-btn .moon { opacity: 0; transform: rotate(90deg) scale(.6); }
+[data-theme="dark"] .theme-btn .sun { opacity: 1; transform: none; }
+
+[data-theme="dark"] {
+  --bg: #13100e; --text: #f4ede5; --muted: #a89d92; --ink: #f4ede5; --ink-text: #13100e;
+  --glass: linear-gradient(140deg, rgba(255, 255, 255, .1) 0%, rgba(255, 255, 255, .055) 55%, rgba(255, 255, 255, .04) 100%);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 1px rgba(255, 255, 255, .07), 0 16px 34px -20px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
+[data-theme="dark"] .blobs { background:
+    radial-gradient(42vmax 42vmax at 6% 4%, rgba(255, 128, 60, .26), transparent 70%),
+    radial-gradient(36vmax 36vmax at 96% 34%, rgba(236, 72, 120, .16), transparent 70%),
+    radial-gradient(40vmax 40vmax at 40% 104%, rgba(255, 176, 70, .18), transparent 70%),
+    radial-gradient(26vmax 26vmax at 86% 88%, rgba(110, 130, 255, .12), transparent 70%); }
+[data-theme="dark"] .glass::before { background: radial-gradient(420px circle at var(--mx, 18%) var(--my, 0%), rgba(255, 255, 255, .1), transparent 45%); }
+[data-theme="dark"] .glass::after { background: linear-gradient(160deg, rgba(255, 255, 255, .28), rgba(255, 255, 255, .03) 35%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, .1)); }
+[data-theme="dark"] .btn, [data-theme="dark"] .theme-btn, [data-theme="dark"] .go { background: rgba(255, 255, 255, .09); color: var(--text); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 1px rgba(255, 255, 255, .06); }
+[data-theme="dark"] .btn.accent { background: linear-gradient(135deg, var(--accent), #f97316); color: #fff; }
+[data-theme="dark"] .bar nav a:hover { background: rgba(255, 255, 255, .08); }
+[data-theme="dark"] .chips span { background: rgba(255, 255, 255, .07); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
+[data-theme="dark"] .status { background: rgba(79, 138, 42, .18); color: #a6d982; }
+[data-theme="dark"] .status i, [data-theme="dark"] .status i::after { background: #7cc24a; }
+[data-theme="dark"] .pillglass { background: rgba(19, 16, 14, .55); color: #f4ede5; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15); }
+[data-theme="dark"] .xp > ol > li { border-color: rgba(255, 255, 255, .08); }
+[data-theme="dark"] .contact { background: linear-gradient(150deg, rgba(255, 140, 70, .14), rgba(255, 255, 255, .04)); color: var(--text); }
+[data-theme="dark"] .contact .label { color: var(--muted); }
+[data-theme="dark"] .proj .img { background: linear-gradient(135deg, #2c2622, #1c1815); }
+[data-theme="dark"] .sheet { background: rgba(28, 24, 21, .9); }
+[data-theme="dark"] .sheet .grab { background: rgba(255, 255, 255, .2); }
+[data-theme="dark"] .sheet .x { background: rgba(255, 255, 255, .1); color: var(--text); box-shadow: none; }
+[data-theme="dark"] .toast { background: rgba(244, 237, 229, .92); color: #13100e; }
+[data-theme="dark"] .label b { box-shadow: 0 0 0 3px rgba(234, 88, 12, .3); }
+
+/* theme switch crossfade (View Transitions: a compositor-only snapshot fade) */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .45s; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }

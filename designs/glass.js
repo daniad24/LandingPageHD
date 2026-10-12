@@ -77,7 +77,11 @@
     };
     t.bar = function () {
       return '<header class="glass live bar"><a class="me" href="#"><img src="' + e(C.asset(p.photo)) + '" alt="">' + e(p.name) + '</a>' +
-        '<nav><a href="#proiecte">Proiecte</a><a href="#experienta">Experiență</a><a class="cta" href="#contact">Contact</a></nav></header>';
+        '<div class="right"><nav><a href="#proiecte">Proiecte</a><a href="#experienta">Experiență</a><a class="cta" href="#contact">Contact</a></nav>' +
+        '<button class="theme-btn" data-act="theme" aria-label="Schimbă tema (luminoasă / întunecată)">' +
+        '<svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>' +
+        '<svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1.5 12h3M19.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>' +
+        '</button></div></header>';
     };
     t.foot = function (name) { return '<footer class="foot"><span>© ' + new Date().getFullYear() + ' ' + e(p.name) + '</span><span>' + e(name) + '</span></footer>'; };
     return t;
@@ -149,12 +153,29 @@
     var p = c.profile || {}, open = sheetFor(c);
     root.addEventListener("click", function (ev) {
       var a = ev.target.closest("[data-act]");
-      if (a) { if (a.getAttribute("data-act") === "share") C.share(p); else { C.vcard(p); C.toast("Contact descărcat ✓"); } return; }
+      if (a) {
+        var act = a.getAttribute("data-act");
+        if (act === "share") C.share(p); else if (act === "theme") toggleTheme(); else { C.vcard(p); C.toast("Contact descărcat ✓"); }
+        return;
+      }
       var pj = ev.target.closest("[data-p]"); if (pj) open(+pj.getAttribute("data-p"));
     });
     reveal(root); countUp(root); specular();
     return open;
   }
+
+  // Light is the default; dark only when the visitor chooses it (the device setting is deliberately ignored).
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", t === "dark" ? "#13100e" : "#efe9e1");
+  }
+  function toggleTheme() {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    try { localStorage.setItem("theme", next); } catch (err) {}
+    if (document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.startViewTransition(function () { applyTheme(next); });
+    else applyTheme(next);
+  }
+  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
 
   window.GLASS = { tiles: T, wire: wire };
   document.body.insertAdjacentHTML("afterbegin", '<div class="blobs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>');
