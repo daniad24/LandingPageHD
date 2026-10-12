@@ -1,0 +1,51 @@
+{
+  "profile": {
+    "title": "Web Dev · UI/UX Design",
+    "tagline": "Web developer and Business Information Systems student, with experience in digital certification, operations and client relations.",
+    "location": "Bucharest, Romania",
+    "availability": "Open to new opportunities"
+  },
+  "about": "I build modern, easy-to-use websites where technology meets business.\n\nI study Computer Science for Business Management at the Romanian-American University in Bucharest and have 4 years of hands-on experience. At AlfaTrust – Alfasign I work with qualified digital certificates and electronic signatures, handle sales and client relations, and lately I’ve also been involved in debugging and development. At Horeca4You I coordinated daily operations: sales, invoicing, logistics, e-mail marketing and the company website.\n\nI like understanding what a client needs and turning it into a simple, clear solution: a fast website, a more efficient process or a more pleasant experience for users. I’m motivated by work done well that actually helps people.",
+  "stats": [
+    { "value": "4", "label": "Years of experience" },
+    { "value": "4", "label": "Projects delivered" },
+    { "value": "3", "label": "Happy clients" }
+  ],
+  "experience": [
+    {
+      "role": "Qualified digital certificates & sales",
+      "period": "2023 – present",
+      "description": "I issue qualified digital certificates and create qualified electronic signatures for clients.\nI manage sales and client relations, from first contact to certificate issuance and support.\nIn recent months I’ve also worked on the technical side: finding and fixing bugs, debugging and development on internal projects.\nCrypto Officer (CO)."
+    },
+    {
+      "role": "Operations, sales, marketing & logistics",
+      "period": "2024 – Sep 2026",
+      "description": "Main person in charge of daily operations.\nSales management, invoicing and logistics, from order to delivery.\nE-mail marketing and representing the company at events.\nManaging and updating the website."
+    }
+  ],
+  "education": [
+    {
+      "title": "Computer Science for Business Management",
+      "institution": "Romanian-American University, Bucharest",
+      "period": "Oct 2022 – Jun 2027"
+    }
+  ],
+  "skills": [
+    { "group": "Web & design", "items": ["HTML & CSS", "JavaScript", "Responsive design", "UI/UX design", "Debugging", "Git & GitHub"] },
+    { "group": "Digital certification", "items": ["Qualified digital certificates", "Qualified electronic signatures", "eIDAS standard"] },
+    { "group": "Business", "items": ["Sales", "Client relations", "E-mail marketing", "Invoicing", "Logistics", "Event representation"] }
+  ],
+  "projects": [
+    {
+      "description": "Presentation website for a cleaning services company.",
+      "details": "",
+      "tags": ["Web design", "Development"]
+    },
+    {
+      "description": "Website for the mutual aid fund of healthcare employees, with a loan simulator and online application.",
+      "details": "I built the website for Sanitas CAR, the mutual aid fund of healthcare employees in Bucharest.\n\nIts main feature is the loan simulator: users pick the amount and the repayment period and instantly see the monthly instalment, calculated transparently. The application is filled in online and the official document is sent instantly to the member’s e-mail and to the Sanitas CAR office.",
+      "tags": ["Web design", "Loan simulator", "Online application"]
+    }
+  ],
+  "footer": "All rights reserved."
+}

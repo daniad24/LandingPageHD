@@ -64,7 +64,7 @@
   function share(p) {
     var url = "https://husanudaniel.ro/";
     if (navigator.share) { navigator.share({ title: p.name, text: [p.name, p.title].filter(Boolean).join(" – "), url: url }).catch(function () {}); return; }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(function () { toast("Link copiat ✓"); });
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(function () { toast(window.GLASS ? window.GLASS.L("copied") : "Link copiat ✓"); });
     else window.prompt("Copiază linkul:", url);
   }
   var t;
@@ -86,7 +86,23 @@
   function load() {
     return fetch("../../content.json", { cache: "no-store" }).then(function (r) { return r.json(); });
   }
+  // English overrides (content.en.json): objects are merged, arrays of objects merged by index, the rest replaced
+  function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
+  function merge(base, over) {
+    var out = JSON.parse(JSON.stringify(base || {}));
+    Object.keys(over || {}).forEach(function (k) {
+      var b = out[k], o = over[k];
+      if (Array.isArray(o) && Array.isArray(b) && o.every(isObj)) out[k] = b.map(function (x, i) { return isObj(x) && o[i] ? Object.assign({}, x, o[i]) : x; });
+      else if (isObj(o) && isObj(b)) out[k] = Object.assign({}, b, o);
+      else out[k] = o;
+    });
+    return out;
+  }
+  function loadBoth() {
+    var en = fetch("../../content.en.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    return Promise.all([load(), en]);
+  }
   window.CV = { I: I, esc: esc, list: list, safeUrl: safeUrl, asset: asset, paragraphs: paragraphs, lines: lines,
     logo: logo, cover: cover, shot: shot, initials: initials, tel: tel, wa: wa, socialIcon: socialIcon,
-    vcard: vcard, share: share, toast: toast, reveal: reveal, load: load };
+    vcard: vcard, share: share, toast: toast, reveal: reveal, load: load, merge: merge, loadBoth: loadBoth };
 })();
