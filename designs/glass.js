@@ -164,7 +164,7 @@
     return open;
   }
 
-  // Light is the default; dark only when the visitor chooses it (the device setting is deliberately ignored).
+  // Follows the phone's light/dark setting; a choice made with the button wins and is remembered.
   function applyTheme(t) {
     document.documentElement.setAttribute("data-theme", t);
     var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", t === "dark" ? "#13100e" : "#efe9e1");
@@ -176,6 +176,12 @@
     else applyTheme(next);
   }
   applyTheme(document.documentElement.getAttribute("data-theme") || "light");
+  var sys = matchMedia("(prefers-color-scheme: dark)");
+  function followSystem(ev) {
+    var saved = null; try { saved = localStorage.getItem("theme"); } catch (err) {}
+    if (saved !== "light" && saved !== "dark") applyTheme(ev.matches ? "dark" : "light");
+  }
+  if (sys.addEventListener) sys.addEventListener("change", followSystem); else if (sys.addListener) sys.addListener(followSystem);
 
   window.GLASS = { tiles: T, wire: wire };
   document.body.insertAdjacentHTML("afterbegin", '<div class="blobs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>');
