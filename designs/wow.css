@@ -1,0 +1,140 @@
+/* „WOW” layer for Bento 1. Everything animates transform/opacity only, so it runs at the display refresh rate (60/120 Hz). */
+
+/* ---------- 1. Intro (first visit only) ---------- */
+.intro { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--bg); transition: opacity .6s var(--out), transform .8s var(--out); }
+.intro.out { opacity: 0; transform: scale(1.06); pointer-events: none; }
+.intro .in-wrap { display: grid; justify-items: center; gap: 18px; }
+.intro .in-photo { width: 116px; height: 116px; border-radius: 50%; overflow: hidden; transform: scale(.4); opacity: 0;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, .7), 0 20px 50px -18px rgba(234, 88, 12, .6); animation: inPhoto .9s var(--spring) .1s forwards; }
+.intro .in-photo img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.4); animation: inZoom 1.4s var(--out) .1s forwards; }
+.intro h2 { margin: 0; font-size: clamp(34px, 9vw, 64px); font-weight: 800; letter-spacing: -.045em; display: flex; overflow: hidden; padding: 0 4px; }
+.intro h2 span { display: inline-block; transform: translate3d(0, 110%, 0); animation: inChar .7s var(--out) forwards; animation-delay: calc(.35s + var(--c) * 35ms); white-space: pre; }
+.intro h2 span.last { color: var(--muted); font-weight: 500; }
+.intro p { margin: 0; color: var(--muted); font-weight: 600; opacity: 0; animation: inFade .6s var(--out) .95s forwards; }
+.intro small { position: absolute; bottom: calc(26px + env(safe-area-inset-bottom)); color: var(--muted); font-size: 12px; opacity: 0; animation: inFade .5s 1s forwards; }
+@keyframes inPhoto { to { transform: none; opacity: 1; } }
+@keyframes inZoom { to { transform: none; } }
+@keyframes inChar { to { transform: none; } }
+@keyframes inFade { to { opacity: 1; } }
+
+/* tiles wait behind the intro and only then make their entrance */
+html.intro-on [data-in] { opacity: 0 !important; transform: translate3d(0, 18px, 0) scale(.98) !important; transition: none !important; }
+
+/* ---------- 2. Tilt with the phone / pointer: 3D lean + light that slides over the glass ---------- */
+/* each tile gets its own perspective; JS only writes --rx/--ry, the compositor does the rest */
+.tilt-on .tiltable.tr { will-change: transform; transition: opacity .55s var(--ease);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+.tilt-on .tiltable.tr.press:active { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(.975); }
+html.tilting .glass::before {
+  inset: -60%; border-radius: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .5), transparent 32%);
+  transform: translate3d(var(--sx, 0), var(--sy, 0), 0);
+}
+html.tilting .tr::before { will-change: transform; }
+html.tilting[data-theme="dark"] .glass::before { background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .12), transparent 32%); }
+.tilt-chip { position: fixed; z-index: 45; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translate3d(-50%, 140%, 0);
+  display: inline-flex; align-items: center; gap: 8px; padding: 0 8px 0 16px; height: 46px; border-radius: 999px; border: 0; cursor: pointer;
+  font: 600 14px "Inter", sans-serif; color: var(--text); background: rgba(255, 255, 255, .78); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow: var(--glass-shadow), 0 16px 34px -14px rgba(0, 0, 0, .35); transition: transform .6s var(--spring); }
+.tilt-chip.show { transform: translate3d(-50%, 0, 0); }
+.tilt-chip i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .06); font-style: normal; font-size: 14px; }
+[data-theme="dark"] .tilt-chip { background: rgba(40, 34, 30, .82); }
+[data-theme="dark"] .tilt-chip i { background: rgba(255, 255, 255, .1); }
+
+/* ---------- 3. Card → full page (App Store style) ---------- */
+.xv-bg { position: fixed; inset: 0; z-index: 80; background: rgba(15, 12, 10, .35); opacity: 0; transition: opacity .45s var(--out); pointer-events: none; }
+.xv-bg.on { opacity: 1; pointer-events: auto; }
+.xv { position: fixed; z-index: 81; inset: 0; overflow: hidden; border-radius: 0; transform-origin: 0 0; will-change: transform;
+  background: var(--bg); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .45); }
+.xv.anim { transition: transform .55s var(--out), border-radius .55s var(--out); }
+.xv-scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.xv-content { opacity: 0; transition: opacity .3s var(--out); max-width: 760px; margin: 0 auto; padding: 0 0 calc(40px + env(safe-area-inset-bottom)); }
+.xv.ready .xv-content { opacity: 1; transition-delay: .12s; }
+.xv-hero { position: relative; aspect-ratio: 4 / 3; max-height: 60svh; width: 100%; overflow: hidden; background: linear-gradient(135deg, #2a2522, #1a1714); }
+.xv-hero img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.xv-hero .ph { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(247, 243, 238, .9); font-size: 90px; font-weight: 800; letter-spacing: -.05em; }
+.xv-gal { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 14px 20px 0; }
+.xv-gal img { flex: 0 0 72%; border-radius: 18px; scroll-snap-align: center; max-height: 46svh; object-fit: cover; object-position: top; }
+.xv-body { padding: 22px 22px 0; }
+.xv-body .kicker { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.xv-body h2 { margin: 10px 0 12px; font-size: clamp(28px, 7vw, 44px); line-height: 1.05; letter-spacing: -.04em; }
+.xv-body p { color: var(--muted); font-size: 16.5px; line-height: 1.6; margin: 0 0 14px; }
+.xv-body ul { margin: 6px 0 18px; padding: 0; list-style: none; display: grid; gap: 12px; }
+.xv-body li { position: relative; padding-left: 26px; color: var(--muted); font-size: 16px; line-height: 1.55; }
+.xv-body li::before { content: ""; position: absolute; left: 4px; top: .6em; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(234, 88, 12, .15); }
+.xv-body .chips { margin: 0 0 18px; }
+.xv-body .lg { width: 58px; height: 58px; border-radius: 16px; }
+.xv-close { position: fixed; z-index: 82; top: calc(14px + env(safe-area-inset-top)); right: 14px; width: 42px; height: 42px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer;
+  color: var(--text); background: rgba(255, 255, 255, .72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 6px 18px -8px rgba(0, 0, 0, .35);
+  opacity: 0; transform: scale(.6); transition: opacity .3s var(--out), transform .45s var(--spring); }
+.xv-close.on { opacity: 1; transform: none; }
+[data-theme="dark"] .xv-close { background: rgba(40, 34, 30, .75); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12); }
+@media (min-width: 900px) {
+  .xv { inset: 4vh auto auto 50%; width: 760px; height: 92vh; margin-left: -380px; border-radius: 34px; }
+  .xv-close { top: calc(4vh + 14px); right: calc(50% - 380px + 14px); }
+}
+
+/* ---------- 4. Live „Acum” tile: clock, weather and a slowly circling light on the rim ---------- */
+.now .live { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 12.5px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.now .live span { display: inline-flex; align-items: center; gap: 5px; }
+.now .live .dotlive { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, .2); }
+.ring { position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 1;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; overflow: hidden; }
+.ring b { position: absolute; left: 50%; top: 50%; width: 160%; aspect-ratio: 1; margin: -80% 0 0 -80%;
+  background: conic-gradient(from 0deg, transparent 0 62%, rgba(249, 115, 22, .0) 64%, #f97316 78%, #fbbf24 86%, transparent 92%);
+  animation: ringSpin 6s linear infinite; will-change: transform; }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+.now.press { cursor: pointer; }
+@media (max-width: 900px) {
+  .now .co { gap: 10px; } .now .co .lg { width: 34px; height: 34px; flex: none; border-radius: 11px; } .now .co .lg em { font-size: 12px; }
+  .now .co b { font-size: 13px; } .now .co small { font-size: 12px; }
+}
+
+/* ---------- 5. Scroll-driven motion (native, off the main thread) ---------- */
+.progress { position: fixed; z-index: 50; top: 0; left: 0; right: 0; height: 3px; transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+  background: linear-gradient(90deg, #fbbf24, var(--accent)); }
+@supports (animation-timeline: view()) {
+  .progress { animation: progress linear both; animation-timeline: scroll(root); }
+  @keyframes progress { to { transform: scaleX(1); } }
+  .photo img { animation: parallax linear both; animation-timeline: view(); }
+  @keyframes parallax { from { transform: translate3d(0, -7%, 0) scale(1.16); } to { transform: translate3d(0, 7%, 0) scale(1.16); } }
+  .grid > .glass:not(.profile):not(.photo):not(.now) { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+  @keyframes rise { from { opacity: .25; scale: .94; } to { opacity: 1; scale: 1; } }
+}
+
+/* ---------- 7. Desktop: magnetic buttons + cursor light ---------- */
+.magnet { transition: translate .35s var(--out); }
+.magnet.pull { transition: translate .12s linear; }
+.cursor-glow { position: fixed; z-index: -1; left: 0; top: 0; width: 640px; height: 640px; margin: -320px 0 0 -320px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 170, 110, .35), transparent 62%); transform: translate3d(-999px, -999px, 0); will-change: transform; opacity: 0; transition: opacity .5s; }
+.cursor-glow.on { opacity: 1; }
+[data-theme="dark"] .cursor-glow { background: radial-gradient(circle, rgba(255, 140, 70, .16), transparent 62%); }
+
+/* ---------- 8. Confetti ---------- */
+.confetti { position: fixed; inset: 0; z-index: 90; pointer-events: none; width: 100%; height: 100%; }
+
+/* ---------- 9. Skill bubbles ---------- */
+.bub-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 12px; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.bub-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.bub-legend i { width: 9px; height: 9px; border-radius: 50%; }
+.bubbles { position: relative; height: 340px; border-radius: 22px; overflow: hidden;
+  background: rgba(255, 255, 255, .25); box-shadow: inset 0 1px 3px rgba(70, 40, 15, .12), inset 0 0 0 1px rgba(255, 255, 255, .5); }
+[data-theme="dark"] .bubbles { background: rgba(255, 255, 255, .03); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 0 1px rgba(255, 255, 255, .05); }
+.bub { position: absolute; left: 0; top: 0; display: grid; place-items: center; text-align: center; border-radius: 50%; padding: 8px; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  font-size: 12.5px; font-weight: 600; line-height: 1.15; color: #fff; will-change: transform;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .45), inset 0 -6px 14px rgba(0, 0, 0, .12), 0 10px 22px -12px rgba(0, 0, 0, .45); }
+.bub:active { cursor: grabbing; }
+.bub::after { content: ""; position: absolute; left: 18%; top: 10%; width: 36%; height: 26%; border-radius: 50%; background: rgba(255, 255, 255, .35); filter: blur(2px); }
+.bub-hint { margin-top: 10px; font-size: 12.5px; color: var(--muted); text-align: center; }
+@media (min-width: 901px) { .bubbles { height: 320px; } }
+
+/* ---------- RO / EN ---------- */
+.lang-btn span { font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+.swap-out main, .swap-out .bar nav { opacity: 0; transform: translate3d(0, 6px, 0); }
+main, .bar nav { transition: opacity .25s var(--out), transform .3s var(--out); }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+  .ring b { animation: none; }
+  .photo img, .grid > .glass, .progress { animation: none !important; }
+}

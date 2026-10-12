@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t)})()</script>
 <link rel="stylesheet" href="../glass.css">
+<link rel="stylesheet" href="../wow.css">
 <style>
 /* 12-column desktop, 6-column phone: every row is made of tiles of equal height */
 .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
@@ -107,145 +108,193 @@
 <div class="wrap" id="root"></div>
 <script src="../shared.js"></script>
 <script src="../glass.js"></script>
+<script src="../wow.js"></script>
 <script>
-CV.load().then(function (c) {
-  var t = GLASS.tiles(c), root = document.getElementById("root"), C = CV, I = C.I, e = C.esc;
-  var projects = C.list(c.projects);
+(function () {
+  var C = CV, G = GLASS, I = C.I, e = C.esc, L = G.L, root = document.getElementById("root");
+  var base, en, ac = null, lang;
 
-  var swipe = '<section class="glass swipe" id="despre" data-in>' +
-    '<div class="sw-head"><div class="seg" id="seg"><button class="on" data-pg="0">Despre</button><button data-pg="1">Competențe</button><span class="ind"></span></div>' +
-    '<span class="sw-hint">Glisează ' + I.right + '</span></div>' +
-    '<div class="sw-track" id="swTrack">' +
-      '<div class="sw-page about"><div class="txt">' + C.paragraphs(c.about) + '</div></div>' +
-      '<div class="sw-page skills"><div class="grps">' + C.list(c.skills).map(function (g) {
-        return '<div><h5>' + e(g.group) + '</h5><div class="chips">' + C.list(g.items).map(function (s) { return "<span>" + e(s) + "</span>"; }).join("") + '</div></div>';
-      }).join("") + '</div></div>' +
-    '</div><div class="sw-dots" id="swDots"><i class="on"></i><i></i></div></section>';
-
-  var cards = projects.map(function (_, i) {
-    // the coverflow handles taps itself, so the card is not a generic [data-p] trigger
-    return '<div class="cf-card" data-cf="' + i + '">' + t.project(i).replace(/ data-p="\d+"/, "").replace(" press ", " ").replace(" data-in", "") +
-      '<span class="tap">Atinge pentru detalii</span></div>';
-  }).join("");
-  var cf = projects.length ? '<section class="glass cf" id="proiecte" data-in><div class="cf-head"><p class="label"><b></b>Proiecte</p>' +
-    '<div class="cf-ctrl"><span class="count" id="cfCount"></span><button class="btn" data-cfdir="-1" aria-label="Proiectul anterior">‹</button><button class="btn" data-cfdir="1" aria-label="Proiectul următor">›</button></div></div>' +
-    '<div class="cf-stage" id="cfStage">' + cards + '</div><div class="cf-dots" id="cfDots">' +
-    projects.map(function (_, i) { return '<button aria-label="Proiectul ' + (i + 1) + '"></button>'; }).join("") + '</div></section>' : "";
-
-  root.innerHTML = t.bar() + '<main class="grid">' +
-    t.profile() + t.photo() + t.now() +
-    t.stat(0) + t.stat(1) + t.stat(2) + t.socials() +
-    swipe + cf + t.xp() + t.contact() + '</main>' + t.foot("Bento 1 · Rânduri ordonate");
-  var openProject = GLASS.wire(root, c);
-
-  /* ---------- swipe pages ---------- */
-  var track = document.getElementById("swTrack"), seg = document.getElementById("seg"), pages = track.children, dots = document.getElementById("swDots").children, pg = 0;
-  var settleTimer, swQueued = false;
-  function heights() { return [].map.call(pages, function (x) { return x.offsetHeight; }); }
-  // While a swipe is in progress the tile keeps the taller of the two pages in view,
-  // so nothing gets clipped; it only shrinks/grows to the active page once the swipe has settled.
-  function setHeight(px) { if (track.style.height !== px + "px") track.style.height = px + "px"; }
-  function settle() {
-    var f = track.scrollLeft / track.clientWidth, i = Math.round(f);
-    track.scrollTop = 0;
-    if (Math.abs(f - i) > .02) return; // finger still holding the page mid-way: keep both pages fully visible
-    setHeight(heights()[i]);
+  // Romanian unless the visitor clearly isn't in/from Romania; a choice made with the button wins (?lang= too)
+  function pickLang() {
+    var q = (location.search.match(/[?&]lang=(ro|en)\b/) || [])[1]; if (q) return q;
+    var s = null; try { s = localStorage.getItem("lang"); } catch (err) {}
+    if (s === "ro" || s === "en") return s;
+    var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (err) {}
+    var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""];
+    return /^Europe\/(Bucharest|Chisinau)$/.test(tz) || [].some.call(langs, function (l) { return /^ro\b/i.test(l); }) ? "ro" : "en";
   }
-  function onSwipe() {
-    swQueued = false;
-    var f = Math.max(0, Math.min(pages.length - 1, track.scrollLeft / track.clientWidth));
-    seg.style.setProperty("--p", f);
-    var h = heights(), lo = Math.floor(f), hi = Math.ceil(f);
-    setHeight(Math.max(h[lo], h[hi]));
-    var now = Math.round(f);
-    if (now !== pg) {
-      pg = now;
-      seg.querySelectorAll("button").forEach(function (b, i) { b.classList.toggle("on", i === pg); });
-      [].forEach.call(dots, function (d, i) { d.classList.toggle("on", i === pg); });
+
+  function render(l) {
+    lang = l; G.setLang(l);
+    if (ac) ac.abort();
+    ac = new AbortController();
+    var sig = ac.signal, c = l === "en" ? C.merge(base, en) : base;
+    var t = G.tiles(c), projects = C.list(c.projects);
+    t.cvUrl = "../../assets/cv/Daniel-Husanu-CV-" + l.toUpperCase() + ".pdf";
+
+    var swipe = '<section class="glass swipe" id="despre" data-in>' +
+      '<div class="sw-head"><div class="seg" id="seg"><button class="on" data-pg="0">' + L("about") + '</button><button data-pg="1">' + L("skills") + '</button><span class="ind"></span></div>' +
+      '<span class="sw-hint">' + L("swipe") + ' ' + I.right + '</span></div>' +
+      '<div class="sw-track" id="swTrack">' +
+        '<div class="sw-page about"><div class="txt">' + C.paragraphs(c.about) + '</div></div>' +
+        '<div class="sw-page skills"><div class="grps">' + C.list(c.skills).map(function (g) {
+          return '<div><h5>' + e(g.group) + '</h5><div class="chips">' + C.list(g.items).map(function (s) { return "<span>" + e(s) + "</span>"; }).join("") + '</div></div>';
+        }).join("") + '</div></div>' +
+      '</div><div class="sw-dots" id="swDots"><i class="on"></i><i></i></div></section>';
+
+    var cards = projects.map(function (_, i) {
+      // the coverflow handles taps itself, so the card is not a generic [data-p] trigger
+      return '<div class="cf-card" data-cf="' + i + '">' + t.project(i).replace(/ data-p="\d+"/, "").replace(" press ", " ").replace(" data-in", "") +
+        '<span class="tap">' + L("tap") + '</span></div>';
+    }).join("");
+    var cf = projects.length ? '<section class="glass cf" id="proiecte" data-in><div class="cf-head"><p class="label"><b></b>' + L("projects") + '</p>' +
+      '<div class="cf-ctrl"><span class="count" id="cfCount"></span><button class="btn" data-cfdir="-1" aria-label="' + L("prev") + '">‹</button><button class="btn" data-cfdir="1" aria-label="' + L("next") + '">›</button></div></div>' +
+      '<div class="cf-stage" id="cfStage">' + cards + '</div><div class="cf-dots" id="cfDots">' +
+      projects.map(function (_, i) { return '<button aria-label="' + L("project") + ' ' + (i + 1) + '"></button>'; }).join("") + '</div></section>' : "";
+
+    root.innerHTML = t.bar() + '<main class="grid">' +
+      t.profile() + t.photo() + t.now() +
+      t.stat(0) + t.stat(1) + t.stat(2) + t.socials() +
+      swipe + cf + t.xp() + t.contact() + '</main>' + t.foot("Bento 1 · Rânduri ordonate");
+    G.wire(root, c);
+    var wow = WOW.mount(root, c, sig, l);
+    mountSwipe(sig, wow);
+    mountCoverflow(sig, wow, projects);
+  }
+
+  /* ---------- swipe pages: Despre / Competențe ---------- */
+  function mountSwipe(sig, wow) {
+    var track = document.getElementById("swTrack"), seg = document.getElementById("seg"), pages = track.children, dots = document.getElementById("swDots").children, pg = 0;
+    var settleTimer, swQueued = false;
+    function heights() { return [].map.call(pages, function (x) { return x.offsetHeight; }); }
+    // While a swipe is in progress the tile keeps the taller of the two pages in view,
+    // so nothing gets clipped; it only shrinks/grows to the active page once the swipe has settled.
+    function setHeight(px) { if (track.style.height !== px + "px") track.style.height = px + "px"; }
+    function settle() {
+      var f = track.scrollLeft / track.clientWidth, i = Math.round(f);
+      track.scrollTop = 0;
+      if (Math.abs(f - i) > .02) return; // finger still holding the page mid-way: keep both pages fully visible
+      setHeight(heights()[i]);
     }
-    clearTimeout(settleTimer); settleTimer = setTimeout(settle, 140);
-  }
-  track.addEventListener("scroll", function () { if (!swQueued) { swQueued = true; requestAnimationFrame(onSwipe); } }, { passive: true });
-  if ("onscrollend" in window) track.addEventListener("scrollend", function () { clearTimeout(settleTimer); settle(); });
-  seg.addEventListener("click", function (ev) {
-    var b = ev.target.closest("[data-pg]"); if (!b) return;
-    track.scrollTo({ left: +b.getAttribute("data-pg") * track.clientWidth, behavior: "smooth" });
-  });
-  addEventListener("resize", settle); addEventListener("load", settle); settle();
-
-  /* ---------- coverflow ---------- */
-  var stage = document.getElementById("cfStage");
-  if (!stage) return;
-  var items = [].slice.call(stage.children), n = items.length, cur = 0, drag = 0, loop = n >= 3;
-  var cdots = [].slice.call(document.getElementById("cfDots").children), count = document.getElementById("cfCount");
-  function off(i) {
-    var d = i - cur;
-    if (loop) { if (d > n / 2) d -= n; if (d < -n / 2) d += n; }
-    return d - drag;
-  }
-  function render() {
-    var narrow = innerWidth <= 900;
-    items.forEach(function (el, i) {
-      var d = off(i), a = Math.abs(d);
-      var x = d * (narrow ? 64 : 58), s = 1 - Math.min(a, 2) * .14, r = -Math.max(-1.5, Math.min(1.5, d)) * 22;
-      el.style.transform = "translate3d(" + x + "%, 0, " + (-a * 80) + "px) rotateY(" + r + "deg) scale(" + s + ")";
-      el.style.opacity = a > 1.6 ? 0 : 1 - a * .42;
-      el.style.zIndex = 100 - Math.round(a * 10);
-      el.style.pointerEvents = a > 1.6 ? "none" : "auto";
-      el.classList.toggle("center", a < .5);
-      el.classList.toggle("side", a >= .5);
+    function onSwipe() {
+      swQueued = false;
+      var f = Math.max(0, Math.min(pages.length - 1, track.scrollLeft / track.clientWidth));
+      seg.style.setProperty("--p", f);
+      var h = heights(), lo = Math.floor(f), hi = Math.ceil(f);
+      setHeight(Math.max(h[lo], h[hi]));
+      var now = Math.round(f);
+      if (now !== pg) {
+        pg = now;
+        seg.querySelectorAll("button").forEach(function (b, i) { b.classList.toggle("on", i === pg); });
+        [].forEach.call(dots, function (d, i) { d.classList.toggle("on", i === pg); });
+        wow.page(pg);
+      }
+      clearTimeout(settleTimer); settleTimer = setTimeout(settle, 140);
+    }
+    track.addEventListener("scroll", function () { if (!swQueued) { swQueued = true; requestAnimationFrame(onSwipe); } }, { passive: true });
+    if ("onscrollend" in window) track.addEventListener("scrollend", function () { clearTimeout(settleTimer); settle(); });
+    seg.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-pg]"); if (!b) return;
+      track.scrollTo({ left: +b.getAttribute("data-pg") * track.clientWidth, behavior: "smooth" });
     });
-    if (render.last === cur) return; render.last = cur;
-    cdots.forEach(function (d, i) { d.classList.toggle("on", i === cur); });
-    count.innerHTML = "<b>" + String(cur + 1).padStart(2, "0") + "</b> / " + String(n).padStart(2, "0");
-    root.querySelectorAll("[data-cfdir]").forEach(function (b) { b.disabled = !loop && ((+b.getAttribute("data-cfdir") < 0 && cur === 0) || (+b.getAttribute("data-cfdir") > 0 && cur === n - 1)); });
+    addEventListener("resize", settle, { signal: sig }); addEventListener("load", settle, { signal: sig }); settle();
   }
-  function go(i) { cur = loop ? (i + n) % n : Math.max(0, Math.min(n - 1, i)); drag = 0; render(); }
-  function fitStage() { stage.style.height = Math.max.apply(null, items.map(function (el) { return el.offsetHeight; })) + "px"; }
 
-  var x0 = null, moved = 0, w = 1, auto, cfQueued = false;
-  stage.addEventListener("pointerdown", function (ev) { x0 = ev.clientX; moved = 0; w = items[cur].offsetWidth * .6; stage.classList.add("dragging"); stopAuto(); });
-  addEventListener("pointermove", function (ev) {
-    if (x0 === null) return;
-    var dx = ev.clientX - x0; moved = Math.max(moved, Math.abs(dx));
-    drag = -dx / w;
-    if (!loop) drag = Math.max(-cur - .3, Math.min(n - 1 - cur + .3, drag));
-    if (!cfQueued) { cfQueued = true; requestAnimationFrame(function () { cfQueued = false; render(); }); }
-  }, { passive: true });
-  function end() {
-    if (x0 === null) return;
-    x0 = null; stage.classList.remove("dragging");
-    var step = Math.round(drag); if (step === 0 && Math.abs(drag) > .18) step = drag > 0 ? 1 : -1;
-    go(cur + step);
-  }
-  addEventListener("pointerup", end); addEventListener("pointercancel", end);
-  stage.addEventListener("click", function (ev) {
-    if (moved > 6) return;
-    var card = ev.target.closest("[data-cf]"); if (!card) return;
-    var i = +card.getAttribute("data-cf");
-    if (i === cur) openProject(i); else go(i);
-  });
-  root.querySelectorAll("[data-cfdir]").forEach(function (b) { b.onclick = function () { stopAuto(); go(cur + +b.getAttribute("data-cfdir")); }; });
-  cdots.forEach(function (d, i) { d.onclick = function () { stopAuto(); go(i); }; });
-  stage.addEventListener("keydown", function (ev) { if (ev.key === "ArrowRight") go(cur + 1); if (ev.key === "ArrowLeft") go(cur - 1); });
-  stage.tabIndex = 0;
-
-  // gentle autoplay until the visitor touches the carousel
-  function stopAuto() { clearInterval(auto); auto = null; }
-  if (n > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    var seen = new IntersectionObserver(function (en) {
-      en.forEach(function (x) {
-        if (x.isIntersecting && auto === undefined) auto = setInterval(function () { if (!document.hidden) go(loop ? cur + 1 : (cur + 1) % n); }, 4500);
-        if (!x.isIntersecting && auto) { clearInterval(auto); auto = undefined; }
+  /* ---------- projects: 3D coverflow ---------- */
+  function mountCoverflow(sig, wow, projects) {
+    var stage = document.getElementById("cfStage");
+    if (!stage) return;
+    var items = [].slice.call(stage.children), n = items.length, cur = 0, drag = 0, loop = n >= 3;
+    var cdots = [].slice.call(document.getElementById("cfDots").children), count = document.getElementById("cfCount"), last = null;
+    function off(i) {
+      var d = i - cur;
+      if (loop) { if (d > n / 2) d -= n; if (d < -n / 2) d += n; }
+      return d - drag;
+    }
+    function render() {
+      var narrow = innerWidth <= 900;
+      items.forEach(function (el, i) {
+        var d = off(i), a = Math.abs(d);
+        var x = d * (narrow ? 64 : 58), s = 1 - Math.min(a, 2) * .14, r = -Math.max(-1.5, Math.min(1.5, d)) * 22;
+        el.style.transform = "translate3d(" + x + "%, 0, " + (-a * 80) + "px) rotateY(" + r + "deg) scale(" + s + ")";
+        el.style.opacity = a > 1.6 ? 0 : 1 - a * .42;
+        el.style.zIndex = 100 - Math.round(a * 10);
+        el.style.pointerEvents = a > 1.6 ? "none" : "auto";
+        el.classList.toggle("center", a < .5);
+        el.classList.toggle("side", a >= .5);
       });
-    }, { threshold: .5 });
-    seen.observe(stage);
+      if (last === cur) return; last = cur;
+      cdots.forEach(function (d, i) { d.classList.toggle("on", i === cur); });
+      count.innerHTML = "<b>" + String(cur + 1).padStart(2, "0") + "</b> / " + String(n).padStart(2, "0");
+      root.querySelectorAll("[data-cfdir]").forEach(function (b) { b.disabled = !loop && ((+b.getAttribute("data-cfdir") < 0 && cur === 0) || (+b.getAttribute("data-cfdir") > 0 && cur === n - 1)); });
+    }
+    function go(i) { cur = loop ? (i + n) % n : Math.max(0, Math.min(n - 1, i)); drag = 0; render(); }
+    function fitStage() { stage.style.height = Math.max.apply(null, items.map(function (el) { return el.offsetHeight; })) + "px"; }
+
+    var x0 = null, moved = 0, w = 1, auto, cfQueued = false;
+    stage.addEventListener("pointerdown", function (ev) { x0 = ev.clientX; moved = 0; w = items[cur].offsetWidth * .6; stage.classList.add("dragging"); stopAuto(); });
+    addEventListener("pointermove", function (ev) {
+      if (x0 === null) return;
+      var dx = ev.clientX - x0; moved = Math.max(moved, Math.abs(dx));
+      drag = -dx / w;
+      if (!loop) drag = Math.max(-cur - .3, Math.min(n - 1 - cur + .3, drag));
+      if (!cfQueued) { cfQueued = true; requestAnimationFrame(function () { cfQueued = false; render(); }); }
+    }, { passive: true, signal: sig });
+    function end() {
+      if (x0 === null) return;
+      x0 = null; stage.classList.remove("dragging");
+      var step = Math.round(drag); if (step === 0 && Math.abs(drag) > .18) step = drag > 0 ? 1 : -1;
+      go(cur + step);
+    }
+    addEventListener("pointerup", end, { signal: sig }); addEventListener("pointercancel", end, { signal: sig });
+    stage.addEventListener("click", function (ev) {
+      if (moved > 6) return;
+      var card = ev.target.closest("[data-cf]"); if (!card) return;
+      var i = +card.getAttribute("data-cf");
+      if (i === cur) wow.openProject(card.querySelector(".proj"), projects[i]); else go(i);
+    });
+    root.querySelectorAll("[data-cfdir]").forEach(function (b) { b.onclick = function () { stopAuto(); go(cur + +b.getAttribute("data-cfdir")); }; });
+    cdots.forEach(function (d, i) { d.onclick = function () { stopAuto(); go(i); }; });
+    stage.addEventListener("keydown", function (ev) { if (ev.key === "ArrowRight") go(cur + 1); if (ev.key === "ArrowLeft") go(cur - 1); if (ev.key === "Enter") wow.openProject(items[cur].querySelector(".proj"), projects[cur]); });
+    stage.tabIndex = 0;
+
+    // gentle autoplay until the visitor touches the carousel
+    function stopAuto() { clearInterval(auto); auto = null; }
+    if (n > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      var seen = new IntersectionObserver(function (en) {
+        en.forEach(function (x) {
+          if (x.isIntersecting && auto === undefined) auto = setInterval(function () { if (!document.hidden) go(loop ? cur + 1 : (cur + 1) % n); }, 4500);
+          if (!x.isIntersecting && auto) { clearInterval(auto); auto = undefined; }
+        });
+      }, { threshold: .5 });
+      seen.observe(stage);
+      sig.addEventListener("abort", function () { seen.disconnect(); clearInterval(auto); });
+    }
+    addEventListener("resize", function () { fitStage(); render(); }, { signal: sig });
+    addEventListener("load", fitStage, { signal: sig });
+    stage.querySelectorAll("img").forEach(function (img) { img.addEventListener("load", fitStage); });
+    render(); fitStage();
   }
-  addEventListener("resize", function () { fitStage(); render(); });
-  addEventListener("load", fitStage);
-  stage.querySelectorAll("img").forEach(function (img) { img.addEventListener("load", fitStage); });
-  render(); fitStage();
-});
+
+  /* ---------- RO / EN ---------- */
+  G.onLang = function (l) {
+    try { localStorage.setItem("lang", l); } catch (err) {}
+    var y = scrollY;
+    root.classList.add("swap-out");
+    setTimeout(function () {
+      render(l); scrollTo(0, y);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove("swap-out"); }); });
+    }, 230);
+  };
+
+  C.loadBoth().then(function (r) {
+    base = r[0]; en = r[1];
+    var l = pickLang();
+    G.setLang(l);
+    WOW.init(l === "en" ? C.merge(base, en) : base);
+    render(l);
+  });
+})();
 </script>
 </body>
 </html>

@@ -3,6 +3,24 @@
   "use strict";
   var C = window.CV, I = C.I, e = C.esc;
 
+  var DICT = {
+    ro: { write: "Scrie-mi", call: "Sună", share: "Distribuie", save: "Salvează", cv: "Descarcă CV", now: "Acum", about: "Despre",
+      skills: "Competențe", projects: "Proiecte", xp: "Experiență & educație", xpShort: "Experiență", contact: "Contact",
+      contactTitle: "Hai să ținem legătura.", profile: "Profil", open: "Deschide site-ul", saved: "Contact salvat ✓", copied: "Link copiat ✓",
+      close: "Închide", theme: "Schimbă tema (luminoasă / întunecată)", lang: "Switch to English", swipe: "Glisează", tap: "Atinge pentru detalii",
+      prev: "Proiectul anterior", next: "Proiectul următor", tilt: "Activează efectul 3D", inCity: "în București", website: "Site-ul firmei",
+      bubHint: "Trage de bule sau atinge una ✦", introHint: "Atinge pentru a intra", project: "Proiectul", details: "Detalii" },
+    en: { write: "Email me", call: "Call", share: "Share", save: "Save contact", cv: "Download CV", now: "Now", about: "About",
+      skills: "Skills", projects: "Projects", xp: "Experience & education", xpShort: "Experience", contact: "Contact",
+      contactTitle: "Let’s stay in touch.", profile: "Profile", open: "Open website", saved: "Contact saved ✓", copied: "Link copied ✓",
+      close: "Close", theme: "Switch theme (light / dark)", lang: "Schimbă în română", swipe: "Swipe", tap: "Tap for details",
+      prev: "Previous project", next: "Next project", tilt: "Enable 3D effect", inCity: "in Bucharest", website: "Company website",
+      bubHint: "Drag the bubbles or tap one ✦", introHint: "Tap to enter", project: "Project", details: "Details" }
+  };
+  var lang = "ro";
+  function L(k) { return (DICT[lang] && DICT[lang][k]) || DICT.ro[k] || k; }
+
+  var CV_ICON = '<svg viewBox="0 0 24 24"><path d="M12 3v11m0 0-4-4m4 4 4-4M5 17v3h14v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function T(c) {
     var p = c.profile || {}, parts = String(p.name || "").split(" "), tel = C.tel(p), wa = C.wa(p);
     var t = {};
@@ -11,10 +29,11 @@
         (p.availability ? '<span class="status"><i></i>' + e(p.availability) + '</span>' : "") +
         '<h1 style="margin-top:18px">' + e(parts[0]) + ' <span>' + e(parts.slice(1).join(" ")) + '</span></h1>' +
         '<p class="role">' + e(p.title) + '</p><p class="tag">' + e(p.tagline) + '</p>' +
-        '<div class="acts">' + (p.email ? '<a class="btn accent" href="mailto:' + e(p.email) + '">' + I.mail + 'Scrie-mi</a>' : "") +
-        (tel ? '<a class="btn" href="tel:' + e(tel) + '">' + I.phone + 'Sună</a>' : "") +
-        '<button class="btn" data-act="share">' + I.share + 'Distribuie</button>' +
-        '<button class="btn" data-act="vcf">' + I.contact + 'Salvează</button></div></section>';
+        '<div class="acts">' + (p.email ? '<a class="btn accent" href="mailto:' + e(p.email) + '">' + I.mail + L("write") + '</a>' : "") +
+        (tel ? '<a class="btn" href="tel:' + e(tel) + '">' + I.phone + L("call") + '</a>' : "") +
+        '<button class="btn" data-act="share">' + I.share + L("share") + '</button>' +
+        '<button class="btn" data-act="vcf">' + I.contact + L("save") + '</button>' +
+        (t.cvUrl ? '<a class="btn" href="' + e(t.cvUrl) + '" download>' + CV_ICON + L("cv") + '</a>' : "") + '</div></section>';
     };
     t.photo = function (cls, inner) {
       return '<section class="glass t photo ' + (cls || "") + '" data-in><img src="' + e(C.asset(p.photo)) + '" alt="' + e(p.name) + '" decoding="async" fetchpriority="high">' +
@@ -22,7 +41,7 @@
     };
     t.now = function (cls) {
       var n = C.list(c.experience)[0]; if (!n) return "";
-      return '<section class="glass t now ' + (cls || "") + '" data-in><p class="label"><b></b>Acum</p><h3>' + e(n.role) + '</h3>' +
+      return '<section class="glass t now ' + (cls || "") + '" data-in><p class="label"><b></b>' + L("now") + '</p><h3>' + e(n.role) + '</h3>' +
         '<div class="co"><span class="lg"><img src="' + e(C.logo(n)) + '" alt="" onerror="this.remove()"><em>' + e(C.initials(n.company)) + '</em></span>' +
         '<div><b>' + e(n.company) + '</b><small>' + e(n.period) + '</small></div></div></section>';
     };
@@ -39,11 +58,11 @@
       var s = C.list(c.social)[i]; if (!s) return "";
       var ig = /instagram/i.test(s.url + s.label), handle = (String(s.url).match(/instagram\.com\/([^/?#]+)/i) || [])[1];
       return '<a class="glass t soc press ' + (ig ? "ig " : "li ") + (cls || "") + '" data-in href="' + e(C.safeUrl(s.url)) + '" target="_blank" rel="noopener"><span class="go">' + I.arrow + '</span>' +
-        C.socialIcon(s) + '<div><b>' + e(s.label) + '</b><small>' + (handle ? "@" + e(handle) : "Profil") + '</small></div></a>';
+        C.socialIcon(s) + '<div><b>' + e(s.label) + '</b><small>' + (handle ? "@" + e(handle) : L("profile")) + '</small></div></a>';
     };
     t.socials = function (cls) { return C.list(c.social).map(function (_, i) { return t.social(i, cls); }).join(""); };
     t.about = function (cls) {
-      return c.about ? '<section class="glass t about ' + (cls || "") + '" id="despre" data-in><p class="label"><b></b>Despre</p>' + C.paragraphs(c.about) + '</section>' : "";
+      return c.about ? '<section class="glass t about ' + (cls || "") + '" id="despre" data-in><p class="label"><b></b>' + L("about") + '</p>' + C.paragraphs(c.about) + '</section>' : "";
     };
     t.project = function (i, cls) {
       var pr = C.list(c.projects)[i]; if (!pr) return "";
@@ -56,7 +75,7 @@
     t.projects = function (cls) { return C.list(c.projects).map(function (_, i) { return t.project(i, cls); }).join(""); };
     t.xp = function (cls) {
       var xs = C.list(c.experience).concat(C.list(c.education).map(function (d) { return { role: d.title, company: d.institution, period: d.period, domain: d.domain, logo: d.logo }; }));
-      return '<section class="glass t xp ' + (cls || "") + '" id="experienta" data-in><p class="label"><b></b>Experiență & educație</p><ol>' + xs.map(function (x) {
+      return '<section class="glass t xp ' + (cls || "") + '" id="experienta" data-in><p class="label"><b></b>' + L("xp") + '</p><ol>' + xs.map(function (x) {
         var d = C.lines(x.description);
         return '<li><span class="lg"><img src="' + e(C.logo(x)) + '" alt="" onerror="this.remove()"><em>' + e(C.initials(x.company)) + '</em></span><div>' +
           '<h4>' + e(x.role) + '</h4><div class="meta">' + e(x.company) + ' · ' + e(x.period) + '</div>' +
@@ -64,12 +83,12 @@
       }).join("") + '</ol></section>';
     };
     t.skills = function (cls) {
-      return '<section class="glass t skills ' + (cls || "") + '" data-in><p class="label"><b></b>Competențe</p>' + C.list(c.skills).map(function (g) {
+      return '<section class="glass t skills ' + (cls || "") + '" data-in><p class="label"><b></b>' + L("skills") + '</p>' + C.list(c.skills).map(function (g) {
         return '<div class="grp"><h5>' + e(g.group) + '</h5><div class="chips">' + C.list(g.items).map(function (s) { return "<span>" + e(s) + "</span>"; }).join("") + '</div></div>';
       }).join("") + '</section>';
     };
     t.contact = function (cls) {
-      return '<section class="glass t contact ' + (cls || "") + '" id="contact" data-in><p class="label">Contact</p><h2>Hai să ținem legătura.</h2><div class="rows">' +
+      return '<section class="glass t contact ' + (cls || "") + '" id="contact" data-in><p class="label">' + L("contact") + '</p><h2>' + L("contactTitle") + '</h2><div class="rows">' +
         (p.email ? '<a href="mailto:' + e(p.email) + '">' + I.mail + e(p.email) + '<span>' + I.right + '</span></a>' : "") +
         (tel ? '<a href="tel:' + e(tel) + '">' + I.phone + e(p.phone) + '<span>' + I.right + '</span></a>' : "") +
         (wa ? '<a href="https://wa.me/' + e(wa) + '" target="_blank" rel="noopener">' + I.whatsapp + 'WhatsApp<span>' + I.right + '</span></a>' : "") +
@@ -77,8 +96,9 @@
     };
     t.bar = function () {
       return '<header class="glass live bar"><a class="me" href="#"><img src="' + e(C.asset(p.photo)) + '" alt="">' + e(p.name) + '</a>' +
-        '<div class="right"><nav><a href="#proiecte">Proiecte</a><a href="#experienta">Experiență</a><a class="cta" href="#contact">Contact</a></nav>' +
-        '<button class="theme-btn" data-act="theme" aria-label="Schimbă tema (luminoasă / întunecată)">' +
+        '<div class="right"><nav><a href="#proiecte">' + L("projects") + '</a><a href="#experienta">' + L("xpShort") + '</a><a class="cta" href="#contact">' + L("contact") + '</a></nav>' +
+        '<button class="theme-btn lang-btn" data-act="lang" aria-label="' + L("lang") + '"><span>' + (lang === "ro" ? "EN" : "RO") + '</span></button>' +
+        '<button class="theme-btn" data-act="theme" aria-label="' + L("theme") + '">' +
         '<svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>' +
         '<svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1.5 12h3M19.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>' +
         '</button></div></header>';
@@ -124,10 +144,10 @@
     els.forEach(function (x, i) { x.style.setProperty("--i", i % 5); io.observe(x); });
   }
 
-  function sheetFor(c) {
+  function sheetFor(getC) {
     var bg = document.createElement("div"); bg.className = "sheet-bg";
     var sh = document.createElement("section"); sh.className = "sheet"; sh.setAttribute("role", "dialog"); sh.setAttribute("aria-modal", "true");
-    sh.innerHTML = '<div class="grab"></div><button class="x" aria-label="Închide">' + I.close + '</button><div class="sb"></div>';
+    sh.innerHTML = '<div class="grab"></div><button class="x" aria-label="' + L("close") + '">' + I.close + '</button><div class="sb"></div>';
     document.body.appendChild(bg); document.body.appendChild(sh);
     var body = sh.querySelector(".sb");
     function close() { sh.classList.remove("on"); bg.classList.remove("on"); }
@@ -137,30 +157,41 @@
     sh.addEventListener("touchstart", function (ev) { y0 = sh.scrollTop <= 0 ? ev.touches[0].clientY : null; }, { passive: true });
     sh.addEventListener("touchend", function (ev) { if (y0 !== null && ev.changedTouches[0].clientY - y0 > 90) close(); y0 = null; });
     return function (i) {
-      var pr = c.projects[i];
+      var pr = getC().projects[i];
       var imgs = [C.asset(pr.image)].concat(C.list(pr.gallery).map(C.asset)).filter(Boolean);
       if (!imgs.length && C.shot(pr.link)) imgs.push(C.shot(pr.link));
       body.innerHTML = (imgs.length ? '<div class="gal">' + imgs.map(function (s) { return '<img src="' + e(s) + '" alt="" onerror="this.remove()">'; }).join("") + '</div>' : "") +
         '<h3>' + e(pr.title) + '</h3><div class="chips">' + C.list(pr.tags).map(function (x) { return "<span>" + e(x) + "</span>"; }).join("") + '</div>' +
         C.paragraphs(pr.details || pr.description) +
-        (pr.link ? '<a class="btn accent" href="' + e(C.safeUrl(pr.link)) + '" target="_blank" rel="noopener">Deschide site-ul ' + I.arrow + '</a>' : "");
+        (pr.link ? '<a class="btn accent" href="' + e(C.safeUrl(pr.link)) + '" target="_blank" rel="noopener">' + L("open") + ' ' + I.arrow + '</a>' : "");
       sh.scrollTop = 0; sh.classList.add("on"); bg.classList.add("on");
     };
   }
 
   // Wires everything once a variant has written its markup into `root`.
+  var wired = { specular: false }, sheetOpen = null, current = null;
   function wire(root, c) {
-    var p = c.profile || {}, open = sheetFor(c);
+    current = c;
+    var p = c.profile || {};
+    if (!sheetOpen) sheetOpen = sheetFor(function () { return current; });
+    var open = sheetOpen;
+    if (root._wired) { reveal(root); countUp(root); return open; }
+    root._wired = true;
     root.addEventListener("click", function (ev) {
+      p = current.profile || {};
       var a = ev.target.closest("[data-act]");
       if (a) {
         var act = a.getAttribute("data-act");
-        if (act === "share") C.share(p); else if (act === "theme") toggleTheme(); else { C.vcard(p); C.toast("Contact descărcat ✓"); }
+        if (act === "share") C.share(p);
+        else if (act === "theme") toggleTheme();
+        else if (act === "lang") { if (window.GLASS.onLang) window.GLASS.onLang(lang === "ro" ? "en" : "ro"); }
+        else { C.vcard(p); C.toast(L("saved")); if (window.GLASS.onSave) window.GLASS.onSave(a); }
         return;
       }
       var pj = ev.target.closest("[data-p]"); if (pj) open(+pj.getAttribute("data-p"));
     });
-    reveal(root); countUp(root); specular();
+    reveal(root); countUp(root);
+    if (!wired.specular) { wired.specular = true; specular(); }
     return open;
   }
 
@@ -183,6 +214,7 @@
   }
   if (sys.addEventListener) sys.addEventListener("change", followSystem); else if (sys.addListener) sys.addListener(followSystem);
 
-  window.GLASS = { tiles: T, wire: wire };
+  window.GLASS = { tiles: T, wire: wire, L: L, applyTheme: applyTheme,
+    setLang: function (l) { lang = l === "en" ? "en" : "ro"; document.documentElement.lang = lang; }, lang: function () { return lang; } };
   document.body.insertAdjacentHTML("afterbegin", '<div class="blobs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>');
 })();
