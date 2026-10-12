@@ -31,12 +31,12 @@
   background: rgba(255, 255, 255, .4); box-shadow: inset 0 1px 2px rgba(70, 40, 15, .12), inset 0 0 0 1px rgba(255, 255, 255, .5); }
 .seg button { position: relative; z-index: 1; height: 38px; border: 0; background: none; cursor: pointer; font: 600 14px "Inter", sans-serif; color: var(--muted); transition: color .3s; }
 .seg button.on { color: var(--text); }
-.seg .ind { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
+.seg .ind { will-change: transform; position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
   background: rgba(255, 255, 255, .9); box-shadow: inset 0 1px 0 #fff, 0 4px 14px -6px rgba(70, 40, 15, .4); transform: translateX(calc(var(--p, 0) * 100%)); }
 .sw-hint { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .sw-hint svg { width: 16px; height: 16px; animation: nudge 2.4s var(--ease) infinite; }
 @keyframes nudge { 0%, 60%, 100% { transform: none; } 30% { transform: translateX(5px); } }
-.sw-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; align-items: flex-start; transition: height .45s var(--ease); }
+.sw-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; align-items: flex-start; transition: height .4s var(--out); -webkit-overflow-scrolling: touch; }
 .sw-track::-webkit-scrollbar { display: none; }
 .sw-page { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 22px; min-width: 0; }
 .sw-page.about p { margin: 0 0 12px; color: var(--muted); }
@@ -56,13 +56,13 @@
 .cf-ctrl .count { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 4px; }
 .cf-ctrl .count b { color: var(--text); }
 .cf-ctrl .btn { width: 40px; padding: 0; }
-.cf-stage { position: relative; perspective: 1400px; margin-top: 14px; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; transition: height .4s var(--ease); }
+.cf-stage { position: relative; perspective: 1400px; contain: layout; margin-top: 14px; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; transition: height .4s var(--ease); }
 .cf-stage:active { cursor: grabbing; }
 .cf-card { position: absolute; top: 0; left: 50%; width: min(76vw, 460px); margin-left: calc(min(76vw, 460px) / -2);
-  transform-style: preserve-3d; will-change: transform, opacity; transition: transform .6s var(--spring), opacity .45s var(--ease), filter .45s var(--ease); }
+  will-change: transform, opacity; backface-visibility: hidden; transition: transform .55s var(--out), opacity .4s var(--out); }
 .cf-stage.dragging .cf-card { transition: none; }
 .cf-card .proj { background: linear-gradient(140deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .8)); }
-.cf-card.side { filter: blur(1.5px) saturate(.8) brightness(.98); }
+.cf-card.side .proj { box-shadow: var(--glass-shadow); }
 .cf-card .proj { cursor: pointer; }
 .cf-card.center .proj { box-shadow: var(--glass-shadow), 0 30px 60px -28px rgba(70, 40, 15, .55); }
 .cf-card .tap { position: absolute; left: 50%; bottom: -34px; transform: translateX(-50%); font-size: 12.5px; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .3s; }
@@ -135,7 +135,10 @@ CV.load().then(function (c) {
   /* ---------- swipe pages ---------- */
   var track = document.getElementById("swTrack"), seg = document.getElementById("seg"), pages = track.children, dots = document.getElementById("swDots").children, pg = 0;
   function fitHeight() { track.style.height = pages[pg].offsetHeight + "px"; }
-  track.addEventListener("scroll", function () {
+  var swQueued = false;
+  track.addEventListener("scroll", function () { if (!swQueued) { swQueued = true; requestAnimationFrame(onSwipe); } }, { passive: true });
+  function onSwipe() {
+    swQueued = false;
     var f = track.scrollLeft / track.clientWidth;
     seg.style.setProperty("--p", Math.max(0, Math.min(1, f)));
     var now = Math.round(f);
@@ -145,7 +148,7 @@ CV.load().then(function (c) {
       [].forEach.call(dots, function (d, i) { d.classList.toggle("on", i === pg); });
       fitHeight();
     }
-  }, { passive: true });
+  }
   seg.addEventListener("click", function (ev) {
     var b = ev.target.closest("[data-pg]"); if (!b) return;
     track.scrollTo({ left: +b.getAttribute("data-pg") * track.clientWidth, behavior: "smooth" });
@@ -167,13 +170,14 @@ CV.load().then(function (c) {
     items.forEach(function (el, i) {
       var d = off(i), a = Math.abs(d);
       var x = d * (narrow ? 64 : 58), s = 1 - Math.min(a, 2) * .14, r = -Math.max(-1.5, Math.min(1.5, d)) * 22;
-      el.style.transform = "translateX(" + x + "%) translateZ(" + (-a * 80) + "px) rotateY(" + r + "deg) scale(" + s + ")";
+      el.style.transform = "translate3d(" + x + "%, 0, " + (-a * 80) + "px) rotateY(" + r + "deg) scale(" + s + ")";
       el.style.opacity = a > 1.6 ? 0 : 1 - a * .42;
       el.style.zIndex = 100 - Math.round(a * 10);
       el.style.pointerEvents = a > 1.6 ? "none" : "auto";
       el.classList.toggle("center", a < .5);
       el.classList.toggle("side", a >= .5);
     });
+    if (render.last === cur) return; render.last = cur;
     cdots.forEach(function (d, i) { d.classList.toggle("on", i === cur); });
     count.innerHTML = "<b>" + String(cur + 1).padStart(2, "0") + "</b> / " + String(n).padStart(2, "0");
     root.querySelectorAll("[data-cfdir]").forEach(function (b) { b.disabled = !loop && ((+b.getAttribute("data-cfdir") < 0 && cur === 0) || (+b.getAttribute("data-cfdir") > 0 && cur === n - 1)); });
@@ -181,14 +185,14 @@ CV.load().then(function (c) {
   function go(i) { cur = loop ? (i + n) % n : Math.max(0, Math.min(n - 1, i)); drag = 0; render(); }
   function fitStage() { stage.style.height = Math.max.apply(null, items.map(function (el) { return el.offsetHeight; })) + "px"; }
 
-  var x0 = null, moved = 0, w = 1, auto;
+  var x0 = null, moved = 0, w = 1, auto, cfQueued = false;
   stage.addEventListener("pointerdown", function (ev) { x0 = ev.clientX; moved = 0; w = items[cur].offsetWidth * .6; stage.classList.add("dragging"); stopAuto(); });
   addEventListener("pointermove", function (ev) {
     if (x0 === null) return;
     var dx = ev.clientX - x0; moved = Math.max(moved, Math.abs(dx));
     drag = -dx / w;
     if (!loop) drag = Math.max(-cur - .3, Math.min(n - 1 - cur + .3, drag));
-    render();
+    if (!cfQueued) { cfQueued = true; requestAnimationFrame(function () { cfQueued = false; render(); }); }
   }, { passive: true });
   function end() {
     if (x0 === null) return;
