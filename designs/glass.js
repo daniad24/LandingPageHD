@@ -157,6 +157,7 @@
       var pj = ev.target.closest("[data-p]"); if (pj) open(+pj.getAttribute("data-p"));
     });
     reveal(root); countUp(root); specular();
+    return open;
   }
 
   window.GLASS = { tiles: T, wire: wire };
