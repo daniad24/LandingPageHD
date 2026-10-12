@@ -17,7 +17,7 @@
         '<button class="btn" data-act="vcf">' + I.contact + 'Salvează</button></div></section>';
     };
     t.photo = function (cls, inner) {
-      return '<section class="glass t photo ' + (cls || "") + '" data-in><img src="' + e(C.asset(p.photo)) + '" alt="' + e(p.name) + '">' +
+      return '<section class="glass t photo ' + (cls || "") + '" data-in><img src="' + e(C.asset(p.photo)) + '" alt="' + e(p.name) + '" decoding="async" fetchpriority="high">' +
         (inner || (p.location ? '<span class="pillglass loc">' + I.pin + e(p.location) + '</span>' : "")) + '</section>';
     };
     t.now = function (cls) {
@@ -49,7 +49,7 @@
       var pr = C.list(c.projects)[i]; if (!pr) return "";
       var img = C.cover(pr);
       return '<section class="glass proj press ' + (cls || "") + '" data-in data-p="' + i + '"><span class="go">' + I.arrow + '</span>' +
-        '<div class="img"><b>' + e(C.initials(pr.title)) + '</b>' + (img ? '<img src="' + e(img) + '" alt="" loading="lazy" onerror="this.remove()">' : "") + '</div>' +
+        '<div class="img"><b>' + e(C.initials(pr.title)) + '</b>' + (img ? '<img src="' + e(img) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : "") + '</div>' +
         '<div class="body"><h3>' + e(pr.title) + '</h3><p>' + e(pr.description) + '</p><div class="chips">' +
         C.list(pr.tags).map(function (x) { return "<span>" + e(x) + "</span>"; }).join("") + '</div></div></section>';
     };
@@ -76,7 +76,7 @@
         '</div></section>';
     };
     t.bar = function () {
-      return '<header class="glass bar"><a class="me" href="#"><img src="' + e(C.asset(p.photo)) + '" alt="">' + e(p.name) + '</a>' +
+      return '<header class="glass live bar"><a class="me" href="#"><img src="' + e(C.asset(p.photo)) + '" alt="">' + e(p.name) + '</a>' +
         '<nav><a href="#proiecte">Proiecte</a><a href="#experienta">Experiență</a><a class="cta" href="#contact">Contact</a></nav></header>';
     };
     t.foot = function (name) { return '<footer class="foot"><span>© ' + new Date().getFullYear() + ' ' + e(p.name) + '</span><span>' + e(name) + '</span></footer>'; };
@@ -98,23 +98,19 @@
     els.forEach(function (el) { el.textContent = el.getAttribute("data-count").replace(/\d+/, "0"); io.observe(el); });
   }
 
-  // light follows the pointer across every glass tile
+  // light follows a fine pointer over the hovered tile only (no work at all on touch screens)
   function specular() {
-    var raf;
-    function move(x, y) {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(function () {
-        document.querySelectorAll(".glass").forEach(function (g) {
-          var r = g.getBoundingClientRect();
-          if (r.bottom < -200 || r.top > innerHeight + 200) return;
-          g.style.setProperty("--mx", (x - r.left) + "px");
-          g.style.setProperty("--my", (y - r.top) + "px");
-        });
-      });
-    }
-    addEventListener("pointermove", function (ev) { move(ev.clientX, ev.clientY); }, { passive: true });
-    // on phones, let the highlight drift with scrolling so the glass feels alive
-    addEventListener("scroll", function () { if (matchMedia("(hover: none)").matches) move(innerWidth * .25, innerHeight * .15); }, { passive: true });
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    var el = null, rect = null, x = 0, y = 0, queued = false;
+    function paint() { queued = false; if (el) { el.style.setProperty("--mx", (x - rect.left) + "px"); el.style.setProperty("--my", (y - rect.top) + "px"); } }
+    addEventListener("pointermove", function (ev) {
+      var g = ev.target.closest && ev.target.closest(".glass");
+      if (g !== el) { el = g; rect = g ? g.getBoundingClientRect() : null; }
+      if (!el) return;
+      x = ev.clientX; y = ev.clientY;
+      if (!queued) { queued = true; requestAnimationFrame(paint); }
+    }, { passive: true });
+    addEventListener("scroll", function () { el = null; }, { passive: true });
   }
 
   function reveal(root) {
