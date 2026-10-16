@@ -14,21 +14,43 @@
   // keep the address bar clean (the language choice is the only parameter worth keeping)
   if (ref || params.has("card")) {
     var keep = params.get("lang");
-    history.replaceState(history.state, "", location.pathname + (keep ? "?lang=" + keep : "") + location.hash);
+    history.replaceState(history.state, "", location.pathname + "?" + [keep ? "lang=" + keep : "", params.has("gcdebug") ? "gcdebug=1" : ""].filter(Boolean).join("&") + location.hash);
   }
 
   /* ---------- stats ---------- */
   var gcQueue = [], gcReady = false;
+  // ?gcdebug=1 shows on screen what the counter is doing (for testing on a phone, no console needed)
+  var dbgBox = null;
+  function dbg(msg) {
+    if (!params.has("gcdebug")) return;
+    if (!dbgBox) {
+      dbgBox = document.createElement("pre");
+      dbgBox.style.cssText = "position:fixed;left:8px;right:8px;bottom:8px;z-index:300;max-height:46vh;overflow:auto;margin:0;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.88);color:#9f9;font:11px/1.45 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all";
+      document.body.appendChild(dbgBox);
+    }
+    dbgBox.textContent += msg + "\n";
+  }
   function skip() { try { return localStorage.getItem("skipgc") === "t"; } catch (err) { return false; } }
   function stats(code) {
     code = String(code || "").trim().toLowerCase();
-    if (!/^[a-z0-9-]{2,50}$/.test(code) || skip() || /^(localhost|127\.)/.test(location.hostname)) return;
+    dbg("code: " + (code || "(none)") + " · host: " + location.hostname);
+    if (!/^[a-z0-9-]{2,50}$/.test(code)) return dbg("STOP: no valid GoatCounter code in content.json");
+    if (skip()) return dbg("STOP: this browser is marked \"don't count me\" (skipgc=t). Open the admin → Panou → „Numără vizitele mele (test)”.");
+    if (/^(localhost|127\.)/.test(location.hostname)) return dbg("STOP: local address");
     window.goatcounter = { no_onload: true, allow_local: false };
     var s = document.createElement("script");
     s.async = true; s.src = "https://gc.zgo.at/count.js";
     s.setAttribute("data-goatcounter", "https://" + code + ".goatcounter.com/count");
+    s.onerror = function () { dbg("count.js FAILED to load from gc.zgo.at → blocked by the browser or an app (adblock / tracking protection)"); };
     s.onload = function () {
       gcReady = true;
+      dbg("count.js loaded");
+      try {
+        var why = window.goatcounter.filter && window.goatcounter.filter();
+        dbg("filter: " + (why || "ok, will count"));
+        dbg("url: " + String(window.goatcounter.url({ path: location.pathname })).slice(0, 110) + "…");
+        fetch("https://" + code + ".goatcounter.com/count", { mode: "no-cors" }).then(function () { dbg("endpoint reachable: yes"); }, function () { dbg("endpoint reachable: NO (goatcounter.com is blocked here)"); });
+      } catch (err) { dbg("debug error: " + err.message); }
       window.goatcounter.count({ path: location.pathname, referrer: document.referrer, title: document.title });
       if (sourceKey) window.goatcounter.count({ path: "src-" + sourceKey, title: source, event: true });
       gcQueue.forEach(function (full) { window.goatcounter.count({ path: full, title: full, event: true }); }); gcQueue = [];
