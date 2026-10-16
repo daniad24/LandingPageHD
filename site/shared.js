@@ -1,4 +1,4 @@
-/* Shared helpers for the design prototypes in /designs/*. Reads the live content.json. */
+/* Shared helpers for the site (and the CV template). Reads the live content.json. */
 (function () {
   "use strict";
   var I = {
@@ -23,8 +23,9 @@
   }
   function list(v) { return Array.isArray(v) ? v : []; }
   function safeUrl(u) { u = String(u || "").trim(); return /^(javascript|data|vbscript):/i.test(u.replace(/\s/g, "")) ? "" : u; }
-  // content.json paths are relative to the site root; prototypes live two levels down
-  function asset(u) { u = safeUrl(u); return !u || /^(https?:)?\/\//i.test(u) || u.charAt(0) === "/" ? u : "../../" + u; }
+  // content.json paths are relative to the site root, which is the folder above /site/ (works from any page depth)
+  var BASE = new URL("../", (document.currentScript && document.currentScript.src) || location.href).href;
+  function asset(u) { u = safeUrl(u); return !u || /^(https?:)?\/\//i.test(u) || u.charAt(0) === "/" ? u : BASE + u; }
   function paragraphs(t) {
     return String(t || "").split(/\n\s*\n/).filter(Boolean).map(function (p) { return "<p>" + esc(p).replace(/\n/g, "<br>") + "</p>"; }).join("");
   }
@@ -84,7 +85,7 @@
     els.forEach(function (e, i) { e.style.setProperty("--i", i % 6); io.observe(e); });
   }
   function load() {
-    return fetch("../../content.json", { cache: "no-store" }).then(function (r) { return r.json(); });
+    return fetch(BASE + "content.json", { cache: "no-store" }).then(function (r) { return r.json(); });
   }
   // English overrides (content.en.json): objects are merged, arrays of objects merged by index, the rest replaced
   function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
@@ -99,10 +100,10 @@
     return out;
   }
   function loadBoth() {
-    var en = fetch("../../content.en.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    var en = fetch(BASE + "content.en.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
     return Promise.all([load(), en]);
   }
   window.CV = { I: I, esc: esc, list: list, safeUrl: safeUrl, asset: asset, paragraphs: paragraphs, lines: lines,
     logo: logo, cover: cover, shot: shot, initials: initials, tel: tel, wa: wa, socialIcon: socialIcon,
-    vcard: vcard, share: share, toast: toast, reveal: reveal, load: load, merge: merge, loadBoth: loadBoth };
+    vcard: vcard, share: share, toast: toast, reveal: reveal, load: load, base: BASE, merge: merge, loadBoth: loadBoth };
 })();

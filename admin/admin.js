@@ -15,7 +15,10 @@
     education: "Educație", institution: "Instituție",
     skills: "Competențe", group: "Categorie", items: "Elemente",
     projects: "Proiecte", tags: "Etichete", link: "Link", image: "Imagine",
-    footer: "Text subsol", logo: "Logo (opțional, încarcă o imagine)", details: "Descriere completă (apare la „Detalii”)", gallery: "Galerie capturi (apar la „Detalii”)", domain: "Site-ul firmei (pentru logo automat)"
+    footer: "Text subsol", logo: "Logo (opțional, încarcă o imagine)", details: "Descriere completă (apare la „Detalii”)", gallery: "Galerie capturi (apar la „Detalii”)", domain: "Site-ul firmei (pentru logo automat)",
+    testimonials: "Recomandări (citate de la clienți / colegi)", quote: "Citat",
+    analytics: "Statistici vizitatori", goatcounter: "Cod GoatCounter (ex. husanudaniel; gol = oprit)",
+    formEmail: "Email pentru formularul de contact (gol = emailul de mai sus)"
   };
   var TEMPLATES = {
     social: { label: "", url: "" },
@@ -24,12 +27,15 @@
     education: { title: "", institution: "", period: "", domain: "", logo: "" },
     skills: { group: "", items: [] },
     projects: { title: "", description: "", details: "", tags: [], link: "", image: "", gallery: [] },
+    testimonials: { quote: "", name: "", role: "", company: "", photo: "" },
     items: "", tags: "", gallery: ""
   };
-  var MULTILINE = { about: 1, description: 1, tagline: 1, details: 1 };
+  var MULTILINE = { about: 1, description: 1, tagline: 1, details: 1, quote: 1 };
   var FILE_FIELDS = { photo: "image/*", image: "image/*", logo: "image/*", cvFile: "application/pdf" };
 
   var cfg = {}, data = null, sha = null, dirty = false;
+  // whoever opens the admin is the owner: don't count their own visits in the site statistics
+  try { localStorage.setItem("skipgc", "t"); } catch (e) {}
 
   function $(s) { return document.querySelector(s); }
   function el(tag, attrs, children) {

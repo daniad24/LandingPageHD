@@ -123,7 +123,23 @@
       "gallery": [
         "assets/projects/sanitas-full.jpg"
       ]
+    },
+    {
+      "title": "StetoApp",
+      "description": "Aplicație web construită și publicată de mine.",
+      "details": "",
+      "tags": [
+        "Aplicație web",
+        "Dezvoltare"
+      ],
+      "link": "https://stetoapp.vercel.app",
+      "image": "",
+      "gallery": []
     }
   ],
-  "footer": "Toate drepturile rezervate."
+  "testimonials": [],
+  "footer": "Toate drepturile rezervate.",
+  "analytics": {
+    "goatcounter": ""
+  }
 }

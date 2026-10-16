@@ -7,9 +7,18 @@
   },
   "about": "I build modern, easy-to-use websites where technology meets business.\n\nI study Computer Science for Business Management at the Romanian-American University in Bucharest and have 4 years of hands-on experience. At AlfaTrust – Alfasign I work with qualified digital certificates and electronic signatures, handle sales and client relations, and lately I’ve also been involved in debugging and development. At Horeca4You I coordinated daily operations: sales, invoicing, logistics, e-mail marketing and the company website.\n\nI like understanding what a client needs and turning it into a simple, clear solution: a fast website, a more efficient process or a more pleasant experience for users. I’m motivated by work done well that actually helps people.",
   "stats": [
-    { "value": "4", "label": "Years of experience" },
-    { "value": "4", "label": "Projects delivered" },
-    { "value": "3", "label": "Happy clients" }
+    {
+      "value": "4",
+      "label": "Years of experience"
+    },
+    {
+      "value": "4",
+      "label": "Projects delivered"
+    },
+    {
+      "value": "3",
+      "label": "Happy clients"
+    }
   ],
   "experience": [
     {
@@ -31,20 +40,62 @@
     }
   ],
   "skills": [
-    { "group": "Web & design", "items": ["HTML & CSS", "JavaScript", "Responsive design", "UI/UX design", "Debugging", "Git & GitHub"] },
-    { "group": "Digital certification", "items": ["Qualified digital certificates", "Qualified electronic signatures", "eIDAS standard"] },
-    { "group": "Business", "items": ["Sales", "Client relations", "E-mail marketing", "Invoicing", "Logistics", "Event representation"] }
+    {
+      "group": "Web & design",
+      "items": [
+        "HTML & CSS",
+        "JavaScript",
+        "Responsive design",
+        "UI/UX design",
+        "Debugging",
+        "Git & GitHub"
+      ]
+    },
+    {
+      "group": "Digital certification",
+      "items": [
+        "Qualified digital certificates",
+        "Qualified electronic signatures",
+        "eIDAS standard"
+      ]
+    },
+    {
+      "group": "Business",
+      "items": [
+        "Sales",
+        "Client relations",
+        "E-mail marketing",
+        "Invoicing",
+        "Logistics",
+        "Event representation"
+      ]
+    }
   ],
   "projects": [
     {
       "description": "Presentation website for a cleaning services company.",
       "details": "",
-      "tags": ["Web design", "Development"]
+      "tags": [
+        "Web design",
+        "Development"
+      ]
     },
     {
       "description": "Website for the mutual aid fund of healthcare employees, with a loan simulator and online application.",
       "details": "I built the website for Sanitas CAR, the mutual aid fund of healthcare employees in Bucharest.\n\nIts main feature is the loan simulator: users pick the amount and the repayment period and instantly see the monthly instalment, calculated transparently. The application is filled in online and the official document is sent instantly to the member’s e-mail and to the Sanitas CAR office.",
-      "tags": ["Web design", "Loan simulator", "Online application"]
+      "tags": [
+        "Web design",
+        "Loan simulator",
+        "Online application"
+      ]
+    },
+    {
+      "description": "A web app I built and launched.",
+      "details": "",
+      "tags": [
+        "Web app",
+        "Development"
+      ]
     }
   ],
   "footer": "All rights reserved."

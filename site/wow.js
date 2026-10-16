@@ -1,5 +1,5 @@
 /* „WOW” layer for Bento 1: intro, 3D tilt, expanding cards, live „Acum”, scroll progress, magnetic buttons,
-   confetti and skill bubbles. Needs ../shared.js (CV) and ../glass.js (GLASS). Only transform/opacity are animated. */
+   confetti and skill bubbles. Needs shared.js (CV) and glass.js (GLASS). Only transform/opacity are animated. */
 (function () {
   "use strict";
   var C = window.CV, G = window.GLASS, I = C.I, e = C.esc;
@@ -456,9 +456,9 @@
 
   /* ---------- wiring ---------- */
   var inited = false;
-  function init(c) {
+  function init(c, opts) {
     if (inited) return; inited = true;
-    intro(c); tiltInit(); progressInit(); pointerInit();
+    if (!(opts && opts.noIntro)) intro(c); tiltInit(); progressInit(); pointerInit();
     G.onSave = confetti;
   }
   // called after every render (first load + language switch)

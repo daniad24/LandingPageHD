@@ -2,10 +2,22 @@
 Landing Page pentru HusanuDaniel.ro – carte de vizită, CV și proiecte.
 
 ## Structură
-- `index.html`, `styles.css`, `app.js` – site-ul (static, fără build).
-- `content.json` – **tot conținutul** (profil, experiență, competențe, proiecte…).
+- `index.html` + `site/` – site-ul (design „Bento”, static, fără build).
+- `content.json` – **tot conținutul** (profil, experiență, competențe, proiecte, recomandări…); `content.en.json` – textele în engleză.
 - `admin/` – pagină de editare optimizată pentru telefon.
-- `assets/` – imagini; fișierele încărcate din admin ajung în `assets/uploads/`.
+- `assets/` – imagini; fișierele încărcate din admin ajung în `assets/uploads/`. CV-urile PDF sunt în `assets/cv/` (`node tools/build-cv.js`).
+
+## Linkuri scurte (pentru statistici)
+- `husanudaniel.ro/inel` – inelul NFC (deschide direct cartea de vizită)
+- `husanudaniel.ro/in` – linkul din LinkedIn · `husanudaniel.ro/ig` – linkul din Instagram · `husanudaniel.ro/qr` – coduri QR
+
+## Statistici
+Cont gratuit pe goatcounter.com, apoi codul ales (ex. `husanudaniel`) se pune în admin la „Statistici vizitatori”.
+Sursele (inel / LinkedIn / Instagram) apar la „Campaigns”/„Referrers”, iar apăsările (salvează contact, WhatsApp, CV…) ca evenimente `click-…`.
+Vizitele tale nu se numără după ce ai deschis o dată `/admin/` pe acel telefon/browser.
+
+## Formular de contact
+Mesajele ajung pe emailul din profil prin FormSubmit. La primul mesaj, FormSubmit trimite un email de activare – trebuie confirmat o dată.
 
 ## Publicare (GitHub Pages)
 1. Repo → **Settings → Pages** → *Deploy from a branch* → `main` / `(root)`.

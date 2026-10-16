@@ -1,4 +1,4 @@
-/* Shared tiles + behaviour for the Bento „liquid glass” variants. Needs ../shared.js (window.CV). */
+/* Shared tiles + behaviour for the Bento „liquid glass” variants. Needs shared.js (window.CV). */
 (function () {
   "use strict";
   var C = window.CV, I = C.I, e = C.esc;
@@ -9,13 +9,19 @@
       contactTitle: "Hai să ținem legătura.", profile: "Profil", open: "Deschide site-ul", saved: "Contact salvat ✓", copied: "Link copiat ✓",
       close: "Închide", theme: "Schimbă tema (luminoasă / întunecată)", lang: "Switch to English", swipe: "Glisează", tap: "Atinge pentru detalii",
       prev: "Proiectul anterior", next: "Proiectul următor", tilt: "Activează efectul 3D", inCity: "în București", website: "Site-ul firmei",
-      bubHint: "Trage de bule sau atinge una ✦", introHint: "Atinge pentru a intra", project: "Proiectul", details: "Detalii" },
+      bubHint: "Trage de bule sau atinge una ✦", introHint: "Atinge pentru a intra", project: "Proiectul", details: "Detalii",
+      quotes: "Recomandări", formTitle: "Sau lasă-mi un mesaj", fName: "Numele tău", fEmail: "Emailul tău", fMsg: "Mesajul",
+      fSend: "Trimite mesajul", fSending: "Se trimite…", fOk: "Mesaj trimis ✓ Îți răspund curând.", fErr: "Nu s-a putut trimite. Scrie-mi direct pe email.",
+      cardSave: "Salvează contactul", cardMore: "Vezi CV-ul complet", cardHi: "Mă bucur că ne-am cunoscut 👋" },
     en: { write: "Email me", call: "Call", share: "Share", save: "Save contact", cv: "Download CV", now: "Now", about: "About",
       skills: "Skills", projects: "Projects", xp: "Experience & education", xpShort: "Experience", contact: "Contact",
       contactTitle: "Let’s stay in touch.", profile: "Profile", open: "Open website", saved: "Contact saved ✓", copied: "Link copied ✓",
       close: "Close", theme: "Switch theme (light / dark)", lang: "Schimbă în română", swipe: "Swipe", tap: "Tap for details",
       prev: "Previous project", next: "Next project", tilt: "Enable 3D effect", inCity: "in Bucharest", website: "Company website",
-      bubHint: "Drag the bubbles or tap one ✦", introHint: "Tap to enter", project: "Project", details: "Details" }
+      bubHint: "Drag the bubbles or tap one ✦", introHint: "Tap to enter", project: "Project", details: "Details",
+      quotes: "Recommendations", formTitle: "Or leave me a message", fName: "Your name", fEmail: "Your email", fMsg: "Message",
+      fSend: "Send message", fSending: "Sending…", fOk: "Message sent ✓ I’ll get back to you soon.", fErr: "Couldn’t send it. Please email me directly.",
+      cardSave: "Save contact", cardMore: "See the full CV", cardHi: "Nice to meet you 👋" }
   };
   var lang = "ro";
   function L(k) { return (DICT[lang] && DICT[lang][k]) || DICT.ro[k] || k; }
@@ -87,12 +93,13 @@
         return '<div class="grp"><h5>' + e(g.group) + '</h5><div class="chips">' + C.list(g.items).map(function (s) { return "<span>" + e(s) + "</span>"; }).join("") + '</div></div>';
       }).join("") + '</section>';
     };
-    t.contact = function (cls) {
-      return '<section class="glass t contact ' + (cls || "") + '" id="contact" data-in><p class="label">' + L("contact") + '</p><h2>' + L("contactTitle") + '</h2><div class="rows">' +
+    t.contact = function (cls, extra) {
+      return '<section class="glass t contact ' + (cls || "") + '" id="contact" data-in><p class="label">' + L("contact") + '</p><h2>' + L("contactTitle") + '</h2>' +
+        (extra ? '<div class="cwrap">' : "") + '<div class="rows">' +
         (p.email ? '<a href="mailto:' + e(p.email) + '">' + I.mail + e(p.email) + '<span>' + I.right + '</span></a>' : "") +
         (tel ? '<a href="tel:' + e(tel) + '">' + I.phone + e(p.phone) + '<span>' + I.right + '</span></a>' : "") +
         (wa ? '<a href="https://wa.me/' + e(wa) + '" target="_blank" rel="noopener">' + I.whatsapp + 'WhatsApp<span>' + I.right + '</span></a>' : "") +
-        '</div></section>';
+        '</div>' + (extra ? extra + '</div>' : "") + '</section>';
     };
     t.bar = function () {
       return '<header class="glass live bar"><a class="me" href="#"><img src="' + e(C.asset(p.photo)) + '" alt="">' + e(p.name) + '</a>' +
@@ -214,7 +221,7 @@
   }
   if (sys.addEventListener) sys.addEventListener("change", followSystem); else if (sys.addListener) sys.addListener(followSystem);
 
-  window.GLASS = { tiles: T, wire: wire, L: L, applyTheme: applyTheme,
+  window.GLASS = { tiles: T, wire: wire, L: L, applyTheme: applyTheme, current: function () { return current; },
     setLang: function (l) { lang = l === "en" ? "en" : "ro"; document.documentElement.lang = lang; }, lang: function () { return lang; } };
   document.body.insertAdjacentHTML("afterbegin", '<div class="blobs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>');
 })();

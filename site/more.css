@@ -1,0 +1,72 @@
+/* Business-card mode, recommendations and the contact form. */
+
+/* ---------- business card (NFC ring) ---------- */
+.cm { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 16px; overflow-y: auto;
+  background: rgba(239, 233, 225, .72); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+  opacity: 0; transition: opacity .45s var(--out); }
+[data-theme="dark"] .cm { background: rgba(19, 16, 14, .78); }
+.cm.in { opacity: 1; }
+.cm.out { opacity: 0; pointer-events: none; }
+html.cm-on { overflow: hidden; }
+.cm-card { width: min(100%, 400px); padding: 26px 22px 18px; text-align: center; transform: translate3d(0, 24px, 0) scale(.96); transition: transform .7s var(--spring); }
+.cm.in .cm-card { transform: none; }
+.cm.out .cm-card { transform: translate3d(0, 40px, 0) scale(.96); transition-duration: .45s; }
+.cm-hi { margin: 0 0 16px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.cm-photo { width: 112px; height: 112px; margin: 0 auto 14px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 4px rgba(255, 255, 255, .75), 0 18px 40px -16px rgba(234, 88, 12, .6); }
+[data-theme="dark"] .cm-photo { box-shadow: 0 0 0 4px rgba(255, 255, 255, .12), 0 18px 40px -16px rgba(234, 88, 12, .6); }
+.cm-photo img { width: 100%; height: 100%; object-fit: cover; }
+.cm h2 { margin: 0; font-size: 30px; letter-spacing: -.035em; line-height: 1.1; }
+.cm-role { margin: 4px 0 20px; color: var(--muted); font-weight: 600; }
+.cm .btn { width: 100%; }
+.cm-save { height: 54px; font-size: 16px; }
+.cm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.cm-socs { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+.cm-soc { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--text);
+  background: rgba(255, 255, 255, .55); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), inset 0 0 0 1px rgba(255, 255, 255, .5); }
+[data-theme="dark"] .cm-soc { background: rgba(255, 255, 255, .09); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14); }
+.cm-soc svg { width: 20px; height: 20px; fill: currentColor; }
+.cm-more { margin-top: 14px; border: 0; background: none; font: 600 14px "Inter", sans-serif; color: var(--muted); cursor: pointer; padding: 10px; }
+.cm-more span { display: inline-block; animation: cmNudge 1.8s var(--ease) infinite; }
+@keyframes cmNudge { 0%, 60%, 100% { transform: none; } 30% { transform: translate3d(0, 4px, 0); } }
+
+/* ---------- recommendations ---------- */
+.quotes { grid-column: span 12; padding: 22px 0 22px; }
+.quotes .label { padding: 0 22px; }
+.q-track { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px 22px 4px; scroll-padding: 0 22px; }
+.q-track::-webkit-scrollbar { display: none; }
+.q { flex: 0 0 min(84%, 420px); margin: 0; scroll-snap-align: start; padding: 20px; border-radius: 22px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px;
+  background: rgba(255, 255, 255, .5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), inset 0 0 0 1px rgba(255, 255, 255, .5); }
+[data-theme="dark"] .q { background: rgba(255, 255, 255, .05); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1); }
+.q:only-child { flex-basis: 100%; }
+.q blockquote { position: relative; margin: 0; padding-top: 26px; font-size: 16px; line-height: 1.55; }
+.q blockquote::before { content: "“"; position: absolute; top: -14px; left: -2px; font-size: 58px; line-height: 1; font-weight: 800; color: var(--accent); }
+.q figcaption { display: flex; align-items: center; gap: 10px; }
+.q figcaption b { display: block; font-size: 14px; }
+.q figcaption small { color: var(--muted); font-size: 12.5px; }
+.q-av { width: 40px; height: 40px; flex: none; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-size: 13px; font-weight: 800; background: var(--ink); color: var(--ink-text); }
+.q-av img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- contact form (inside the dark contact tile) ---------- */
+.contact .cwrap { display: grid; grid-template-columns: 1fr 1.3fr; gap: 22px; align-items: start; }
+.cform { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cform .cf-title { grid-column: 1 / -1; margin: 0 0 2px; font-weight: 600; opacity: .8; }
+.cform label { display: grid; gap: 6px; font-size: 12.5px; font-weight: 600; }
+.cform label span { opacity: .7; }
+.cform .wide, .cform button, .cform .cf-note { grid-column: 1 / -1; }
+.cform input, .cform textarea { width: 100%; box-sizing: border-box; border: 0; border-radius: 14px; padding: 13px 14px; font: 500 15px/1.4 "Inter", sans-serif; color: inherit;
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), inset 0 0 0 1px rgba(255, 255, 255, .1); outline: none; transition: box-shadow .2s; resize: vertical; }
+.cform input:focus, .cform textarea:focus { box-shadow: inset 0 0 0 2px #fb923c; }
+.cform .bad input, .cform .bad textarea { box-shadow: inset 0 0 0 2px #f87171; }
+.cform .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.cform button { justify-self: start; }
+.cform .cf-note { margin: 0; min-height: 1em; font-size: 14px; font-weight: 600; }
+.cform .cf-note a { text-decoration: underline; }
+.cform.sent .cf-note { color: #86efac; }
+[data-theme="dark"] .cform.sent .cf-note { color: #4ade80; }
+@media (max-width: 900px) {
+  .contact .cwrap { grid-template-columns: 1fr; }
+  .cform { grid-template-columns: 1fr; }
+  .cform input, .cform textarea { font-size: 16px; } /* no zoom on iOS */
+  .quotes { padding: 18px 0; } .quotes .label { padding: 0 18px; } .q-track { padding: 2px 18px 4px; scroll-padding: 0 18px; }
+}
+@media (prefers-reduced-motion: reduce) { .cm-more span { animation: none; } }
