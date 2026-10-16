@@ -61,8 +61,15 @@
 
     <!-- Editor -->
     <section id="editorView" hidden>
-      <div id="form"></div>
-      <details class="card group">
+      <div class="tabs" id="tabs" role="tablist">
+        <button type="button" role="tab" data-tab="dash" class="on">Panou</button>
+        <button type="button" role="tab" data-tab="content">Conținut</button>
+        <button type="button" role="tab" data-tab="account">Cont</button>
+      </div>
+      <div id="tab-dash" class="tabpanel"></div>
+      <div id="tab-content" class="tabpanel" hidden><div id="form"></div></div>
+      <div id="tab-account" class="tabpanel" hidden>
+      <details class="card group" open>
         <summary>Utilizator și parolă</summary>
         <p class="muted small">Setează un utilizator și o parolă ca să intri fără token. Tokenul curent se salvează criptat în repo (<code>admin/auth.json</code>) și poate fi deblocat doar cu aceste date. Folosește o parolă lungă, pe care n-o mai folosești în altă parte.</p>
         <form id="credForm">
@@ -73,6 +80,7 @@
           <p class="small" id="credMsg"></p>
         </form>
       </details>
+      </div>
     </section>
   </main>
 
@@ -83,5 +91,6 @@
   </div>
 
   <script src="admin.js"></script>
+  <script src="dash.js"></script>
 </body>
 </html>
