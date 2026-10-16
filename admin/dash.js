@@ -22,6 +22,14 @@
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} return null; }
   function num(n) { return Number(n || 0).toLocaleString("ro-RO"); }
 
+  /* ---------- theme (same choice as the site) ---------- */
+  $("#themeBtn").addEventListener("click", function () {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    store("theme", next);
+    document.documentElement.setAttribute("data-theme", next);
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", next === "dark" ? "#13100e" : "#efe9e1");
+  });
+
   /* ---------- tabs ---------- */
   function showTab(name) {
     document.querySelectorAll("#tabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === name); });
