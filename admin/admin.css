@@ -110,3 +110,5 @@ textarea { min-height: 96px; resize: vertical; }
 .dash-steps { padding-left: 20px; }
 @media (min-width: 560px) { .dash-tiles { grid-template-columns: repeat(4, 1fr); } }
 .dash-detail { display: block; margin-top: 6px; opacity: .8; font-family: ui-monospace, monospace; font-size: .78rem; overflow-wrap: anywhere; }
+.dash-me { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); display: grid; gap: 10px; justify-items: start; }
+.dash-me p { margin: 0; }
