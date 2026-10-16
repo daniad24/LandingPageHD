@@ -37,7 +37,8 @@
   // small bridge so dash.js (dashboard) can read/edit the content without touching the rest
   window.ADMIN = { data: function () { return data; }, dirty: function () { markDirty(); }, onLoad: null, label: function (k) { return LABELS[k] || k; } };
   // whoever opens the admin is the owner: don't count their own visits in the site statistics
-  try { localStorage.setItem("skipgc", "t"); } catch (e) {}
+  // (unless you switched "count my visits" on from the dashboard, e.g. to test the links)
+  try { if (localStorage.getItem("gc-count-me") === "1") localStorage.removeItem("skipgc"); else localStorage.setItem("skipgc", "t"); } catch (e) {}
 
   function $(s) { return document.querySelector(s); }
   function el(tag, attrs, children) {

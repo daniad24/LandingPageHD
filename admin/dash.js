@@ -59,7 +59,8 @@
     root.innerHTML =
       '<div class="card dash-card" id="statsCard"><div class="dash-head"><h2>Statistici</h2><div class="dash-range" id="rangeSel">' +
         [7, 30, 90].map(function (n) { return '<button type="button" data-range="' + n + '" class="' + (n === range ? "on" : "") + '">' + n + ' zile</button>'; }).join("") +
-      '</div></div><div id="statsBody"></div></div>' +
+      '</div></div><div id="statsBody"></div>' +
+        '<div class="dash-me"><p class="small muted" id="meNote"></p><button type="button" class="btn small-btn" id="meBtn"></button></div></div>' +
 
       '<div class="card dash-card"><h2>Linkurile tale</h2><p class="muted small">Fiecare link numără separat vizitele, ca să vezi de unde vin oamenii.</p><ul class="dash-links">' +
         LINKS.map(function (l) {
@@ -86,7 +87,20 @@
       var r = ev.target.closest("[data-range]");
       if (r) { range = +r.getAttribute("data-range"); build(); }
     };
+    meToggle();
     stats();
+  }
+
+  // Your own visits are not counted in this browser (set automatically when the admin opens).
+  // Switch it on to test /ig, /inel … from the same phone.
+  function meToggle() {
+    var on = store("gc-count-me") === "1";
+    $("#meNote").textContent = on ? "Vizitele tale din acest browser SE numără (mod test)." : "Vizitele tale din acest browser nu se numără, ca să nu strici cifrele. Pentru test folosește altă filă privată sau pornește numărarea.";
+    $("#meBtn").textContent = on ? "Nu mai număra vizitele mele" : "Numără vizitele mele (test)";
+    $("#meBtn").onclick = function () {
+      if (on) { store("gc-count-me", null); store("skipgc", "t"); } else { store("gc-count-me", "1"); store("skipgc", null); }
+      meToggle();
+    };
   }
 
   /* ---------- statistics ---------- */
