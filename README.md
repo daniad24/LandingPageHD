@@ -12,7 +12,7 @@ Landing Page pentru HusanuDaniel.ro – carte de vizită, CV și proiecte.
 - `husanudaniel.ro/in` – linkul din LinkedIn · `husanudaniel.ro/ig` – linkul din Instagram · `husanudaniel.ro/qr` – coduri QR
 
 ## Statistici
-Cont gratuit pe goatcounter.com, apoi codul ales (ex. `husanudaniel`) se pune în admin la „Statistici vizitatori”.
+Cont gratuit pe goatcounter.com (codul ales: `husanudaniel`, setat în `content.json` la `analytics.goatcounter`). Pentru panoul din admin: în GoatCounter, sus în dreapta pe email → fila API → token cu „Read statistics”, apoi îl lipești în admin (rămâne doar pe dispozitiv).
 Sursele (inel / LinkedIn / Instagram) apar la „Campaigns”/„Referrers”, iar apăsările (salvează contact, WhatsApp, CV…) ca evenimente `click-…`.
 Vizitele tale nu se numără după ce ai deschis o dată `/admin/` pe acel telefon/browser.
 
