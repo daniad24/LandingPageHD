@@ -34,6 +34,8 @@
   var FILE_FIELDS = { photo: "image/*", image: "image/*", logo: "image/*", cvFile: "application/pdf" };
 
   var cfg = {}, data = null, sha = null, dirty = false;
+  // small bridge so dash.js (dashboard) can read/edit the content without touching the rest
+  window.ADMIN = { data: function () { return data; }, dirty: function () { markDirty(); }, onLoad: null, label: function (k) { return LABELS[k] || k; } };
   // whoever opens the admin is the owner: don't count their own visits in the site statistics
   try { localStorage.setItem("skipgc", "t"); } catch (e) {}
 
@@ -163,6 +165,7 @@
       $("#who").textContent = cfg.owner + "/" + cfg.repo + " · " + cfg.branch;
       buildForm();
       show("editor");
+      if (window.ADMIN.onLoad) window.ADMIN.onLoad();
       setStatus("Nicio modificare");
     });
   }
@@ -335,6 +338,7 @@
       var isObjList = Array.isArray(v) && (v.length ? typeof v[0] !== "string" : typeof TEMPLATES[key] !== "string");
       var body = isObjList ? objectList(data, key) : field(data, key);
       var group = el("details", { class: "card group" }, [el("summary", { text: label(key) }), body]);
+      group.setAttribute("data-key", key);
       if (idx === 0) group.open = true;
       form.appendChild(group);
     });

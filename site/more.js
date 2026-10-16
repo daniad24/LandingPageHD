@@ -9,6 +9,7 @@
   var params = new URLSearchParams(location.search);
   var ref = (params.get("ref") || params.get("utm_source") || "").toLowerCase();
   var source = SOURCES[ref] || (ref ? ref : "");
+  var sourceKey = ref ? (ref === "nfc" ? "inel" : ref === "li" ? "linkedin" : ref === "ig" ? "instagram" : ref.replace(/[^a-z0-9-]/g, "").slice(0, 24) || "alt") : "";
   var cardMode = params.has("card") || ref === "inel" || ref === "nfc";
   // keep the address bar clean (the language choice is the only parameter worth keeping)
   if (ref || params.has("card")) {
@@ -28,14 +29,17 @@
     s.setAttribute("data-goatcounter", "https://" + code + ".goatcounter.com/count");
     s.onload = function () {
       gcReady = true;
-      window.goatcounter.count({ path: location.pathname, referrer: source || document.referrer, title: document.title });
-      gcQueue.forEach(track); gcQueue = [];
+      window.goatcounter.count({ path: location.pathname, referrer: document.referrer, title: document.title });
+      if (sourceKey) window.goatcounter.count({ path: "src-" + sourceKey, title: source, event: true });
+      gcQueue.forEach(function (full) { window.goatcounter.count({ path: full, title: full, event: true }); }); gcQueue = [];
     };
     document.head.appendChild(s);
   }
-  function track(name) {
-    if (!gcReady) { if (gcQueue.length < 20) gcQueue.push(name); return; }
-    try { window.goatcounter.count({ path: "click-" + name, title: name, event: true }); } catch (err) {}
+  // events show up in GoatCounter as "click-…" (taps) and "src-…" (where the visit came from)
+  function track(name, prefix) {
+    var full = (prefix || "click-") + name;
+    if (!gcReady) { if (gcQueue.length < 20) gcQueue.push(full); return; }
+    try { window.goatcounter.count({ path: full, title: name, event: true }); } catch (err) {}
   }
   // what visitors tap: save contact, WhatsApp, call, email, CV, projects
   document.addEventListener("click", function (ev) {
