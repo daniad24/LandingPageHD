@@ -116,7 +116,13 @@
     return fetch("https://" + code() + ".goatcounter.com/api/v0/" + path + (q ? "?" + q : ""), {
       headers: { "Authorization": "Bearer " + store("gc-token"), "Accept": "application/json" }
     }).then(function (r) {
-      if (!r.ok) { var e = new Error("HTTP " + r.status); e.status = r.status; throw e; }
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          var e = new Error("HTTP " + r.status); e.status = r.status;
+          try { var j = JSON.parse(t); e.detail = j.error || j.message || ""; } catch (x) { e.detail = String(t || "").replace(/<[^>]*>/g, " ").trim(); }
+          e.detail = String(e.detail).slice(0, 140); throw e;
+        });
+      }
       return r.json();
     });
   }
@@ -140,12 +146,21 @@
   function stats() {
     var body = $("#statsBody"); if (!body) return;
     if (!code() || !store("gc-token")) return setup();
+    // GoatCounter wants whole hours, RFC 3339 without milliseconds
+    function iso(d) { return d.toISOString().replace(/\.\d+Z$/, "Z"); }
     var my = ++seq, end = new Date(), start = new Date(end.getTime() - range * 864e5);
-    start.setHours(0, 0, 0, 0);
-    var p = { start: start.toISOString(), end: end.toISOString() };
+    end.setMinutes(0, 0, 0); end = new Date(end.getTime() + 36e5); start.setMinutes(0, 0, 0);
+    var p = { start: iso(start), end: iso(end) };
     body.innerHTML = '<p class="muted">Se încarcă statisticile…</p>';
-    Promise.all([api("stats/total", p), api("stats/hits", { start: p.start, end: p.end, limit: 100 })]).then(function (r) {
+    var calls = { "stats/hits": api("stats/hits", { start: p.start, end: p.end, limit: 100 }), "stats/total": api("stats/total", p) };
+    // each call is judged on its own, so one failing endpoint doesn't hide the other
+    Promise.all(Object.keys(calls).map(function (k) {
+      return calls[k].then(function (v) { return { k: k, v: v }; }, function (e) { return { k: k, e: e }; });
+    })).then(function (res) {
       if (my !== seq) return;
+      var by = {}; res.forEach(function (x) { by[x.k] = x; });
+      if (by["stats/hits"].e) throw by["stats/hits"].e;
+      var r = [by["stats/total"].e ? {} : by["stats/total"].v, by["stats/hits"].v];
       var total = r[0] || {}, hits = (r[1] && r[1].hits) || [];
       var pages = hits.filter(function (h) { return !h.event; });
       var ev = hits.filter(function (h) { return h.event; });
@@ -168,9 +183,12 @@
       $("#gcReload").onclick = stats; $("#gcChange").onclick = function () { setup(); };
     }).catch(function (err) {
       if (my !== seq) return;
-      var msg = err && (err.status === 401 || err.status === 403) ? "Cheia API nu e bună sau nu are permisiunea „Read statistics”."
-        : err && err.status === 404 ? "Nu găsesc contul <b>" + esc(code()) + "</b> pe GoatCounter. Verifică codul."
+      var st = err && err.status, detail = "stats/hits → " + (st ? "HTTP " + st : "fără răspuns") + (err && err.detail ? " · " + esc(err.detail) : "");
+      var msg = st === 401 || st === 403 ? "Cheia API nu e bună sau nu are permisiunea „Read statistics”."
+        : st === 404 ? "GoatCounter a răspuns „negăsit” la cererea de statistici."
+        : st ? "GoatCounter a răspuns cu eroare la cererea de statistici."
         : "Nu am putut citi statisticile din browser (rețea sau GoatCounter refuză cererea). Poți vedea aceleași cifre direct în GoatCounter.";
+      msg += ' <small class="dash-detail">' + detail + "</small>";
       setup(msg);
       $("#statsBody").insertAdjacentHTML("beforeend", '<p><a class="btn small-btn" target="_blank" rel="noopener" href="https://' + esc(code()) + '.goatcounter.com/">Deschide GoatCounter ↗</a></p>');
     });

@@ -109,3 +109,4 @@ textarea { min-height: 96px; resize: vertical; }
 [data-theme="dark"] .dash-warn { color: #fca5a5; }
 .dash-steps { padding-left: 20px; }
 @media (min-width: 560px) { .dash-tiles { grid-template-columns: repeat(4, 1fr); } }
+.dash-detail { display: block; margin-top: 6px; opacity: .8; font-family: ui-monospace, monospace; font-size: .78rem; overflow-wrap: anywhere; }
