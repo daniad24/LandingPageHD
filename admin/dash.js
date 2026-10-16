@@ -95,7 +95,7 @@
     $("#statsBody").innerHTML =
       (msg ? '<p class="dash-warn">' + msg + '</p>' : "") +
       '<ol class="dash-steps small"><li>Fă un cont gratuit pe <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">goatcounter.com</a> și alege un cod (ex. <code>husanudaniel</code>).</li>' +
-      '<li>În GoatCounter: <b>Settings → API</b> → creează o cheie cu permisiunea <b>„Read statistics”</b> și copiaz-o.</li>' +
+      '<li>În GoatCounter, sus în dreapta apasă pe <b>emailul tău</b> → fila <b>API</b> → creează un token cu permisiunea <b>„Read statistics”</b> și copiază-l.</li>' +
       '<li>Pune mai jos codul și cheia. Cheia rămâne doar pe acest telefon/browser.</li></ol>' +
       '<label>Cod GoatCounter<input id="gcCode" value="' + esc(c) + '" placeholder="husanudaniel" autocapitalize="none" autocomplete="off"></label>' +
       '<label>Cheie API (doar pe acest dispozitiv)<input id="gcToken" type="password" value="' + esc(t || "") + '" autocomplete="off"></label>' +
