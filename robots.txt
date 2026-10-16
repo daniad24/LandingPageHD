@@ -1,3 +1,5 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /designs/
+
+Sitemap: https://husanudaniel.ro/sitemap.xml
