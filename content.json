@@ -106,7 +106,7 @@
         "Dezvoltare"
       ],
       "link": "https://etaprocleaning.vercel.app",
-      "image": "",
+      "image": "assets/uploads/1792232724737-etaprocleaning1600-1000-1x.png",
       "gallery": []
     },
     {
@@ -119,10 +119,8 @@
         "Cerere online"
       ],
       "link": "https://sanitas.husanudaniel.ro",
-      "image": "assets/projects/sanitas.jpg",
-      "gallery": [
-        "assets/projects/sanitas-full.jpg"
-      ]
+      "image": "assets/uploads/1792232812369-sanitas-16x10.png",
+      "gallery": []
     },
     {
       "title": "StetoApp",
@@ -134,9 +132,7 @@
       ],
       "link": "https://stetoapp.vercel.app",
       "image": "assets/uploads/1792174008220-img-9203.png",
-      "gallery": [
-        "assets/uploads/1792174054237-card-proiect-16-10-1x.png"
-      ]
+      "gallery": []
     }
   ],
   "testimonials": [],
