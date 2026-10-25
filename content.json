@@ -110,19 +110,6 @@
       "gallery": []
     },
     {
-      "title": "Sanitas CAR",
-      "description": "Site pentru casa de ajutor reciproc a angajaților din sănătate, cu simulator de împrumut și cerere online.",
-      "details": "Am realizat site-ul pentru Sanitas CAR, casa de ajutor reciproc a angajaților din sănătate din București.\n\nFuncția principală e simulatorul de împrumut: utilizatorul alege suma și perioada de rambursare și vede imediat rata lunară, calculată transparent. Cererea se completează online, iar documentul oficial ajunge instant pe e-mailul membrului și la sediul Sanitas CAR.",
-      "tags": [
-        "Web design",
-        "Simulator rate",
-        "Cerere online"
-      ],
-      "link": "https://sanitas.husanudaniel.ro",
-      "image": "assets/uploads/1792232812369-sanitas-16x10.png",
-      "gallery": []
-    },
-    {
       "title": "StetoApp",
       "description": "Aplicație web construită și publicată de mine.",
       "details": "",
