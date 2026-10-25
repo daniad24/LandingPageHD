@@ -103,7 +103,15 @@
     var en = fetch(BASE + "content.en.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
     return Promise.all([load(), en]);
   }
+  // entries marked "hidden": true in the admin stay saved but are not shown anywhere
+  function visible(c) {
+    var out = Object.assign({}, c);
+    ["projects", "testimonials", "experience", "education"].forEach(function (k) {
+      if (Array.isArray(c[k])) out[k] = c[k].filter(function (x) { return !(x && x.hidden === true); });
+    });
+    return out;
+  }
   window.CV = { I: I, esc: esc, list: list, safeUrl: safeUrl, asset: asset, paragraphs: paragraphs, lines: lines,
     logo: logo, cover: cover, shot: shot, initials: initials, tel: tel, wa: wa, socialIcon: socialIcon,
-    vcard: vcard, share: share, toast: toast, reveal: reveal, load: load, base: BASE, merge: merge, loadBoth: loadBoth };
+    vcard: vcard, share: share, toast: toast, reveal: reveal, load: load, base: BASE, merge: merge, loadBoth: loadBoth, visible: visible };
 })();
