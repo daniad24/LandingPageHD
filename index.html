@@ -188,7 +188,7 @@
     lang = l; G.setLang(l);
     if (ac) ac.abort();
     ac = new AbortController();
-    var sig = ac.signal, c = l === "en" ? C.merge(base, en) : base;
+    var sig = ac.signal, c = C.visible(l === "en" ? C.merge(base, en) : base);
     var t = G.tiles(c), projects = C.list(c.projects);
     t.cvUrl = "assets/cv/Daniel-Husanu-CV-" + l.toUpperCase() + ".pdf";
 
@@ -362,7 +362,7 @@
 
   C.loadBoth().then(function (r) {
     base = r[0]; en = r[1];
-    var l = pickLang(), c0 = l === "en" ? C.merge(base, en) : base;
+    var l = pickLang(), c0 = C.visible(l === "en" ? C.merge(base, en) : base);
     G.setLang(l);
     WOW.init(c0, { noIntro: MORE.cardMode });
     render(l);

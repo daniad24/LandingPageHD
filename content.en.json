@@ -81,6 +81,15 @@
       ]
     },
     {
+      "description": "Website for the mutual aid fund of healthcare employees, with a loan simulator and online application.",
+      "details": "I built the website for Sanitas CAR, the mutual aid fund of healthcare employees in Bucharest.\n\nIts main feature is the loan simulator: users pick the amount and the repayment period and instantly see the monthly instalment, calculated transparently. The application is filled in online and the official document is sent instantly to the member’s e-mail and to the Sanitas CAR office.",
+      "tags": [
+        "Web design",
+        "Loan simulator",
+        "Online application"
+      ]
+    },
+    {
       "description": "A web app I built and launched.",
       "details": "",
       "tags": [

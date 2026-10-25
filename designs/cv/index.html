@@ -74,7 +74,7 @@ aside section + section h2 { margin-top: 7mm; }
   document.documentElement.lang = lang;
   function host(u) { return String(u || "").replace(/^https?:\/\//, "").replace(/\/$/, ""); }
   C.loadBoth().then(function (r) {
-    var c = lang === "en" ? C.merge(r[0], r[1]) : r[0], p = c.profile || {}, parts = String(p.name || "").split(" ");
+    var c = C.visible(lang === "en" ? C.merge(r[0], r[1]) : r[0]), p = c.profile || {}, parts = String(p.name || "").split(" ");
     // only social links that point to an actual profile (not a bare domain)
     var li = C.list(c.social).filter(function (s) { return /linkedin\.com\/in\//i.test(s.url); })[0];
     var about = String(c.about || "").split(/\n\s*\n/).filter(Boolean);

@@ -16,6 +16,7 @@
     skills: "Competențe", group: "Categorie", items: "Elemente",
     projects: "Proiecte", tags: "Etichete", link: "Link", image: "Imagine",
     footer: "Text subsol", logo: "Logo (opțional, încarcă o imagine)", details: "Descriere completă (apare la „Detalii”)", gallery: "Galerie capturi (apar la „Detalii”)", domain: "Site-ul firmei (pentru logo automat)",
+    hidden: "Ascuns de pe site (nu se afișează, dar rămâne salvat)",
     testimonials: "Recomandări (citate de la clienți / colegi)", quote: "Citat",
     analytics: "Statistici vizitatori", goatcounter: "Cod GoatCounter (ex. husanudaniel; gol = oprit)",
     formEmail: "Email pentru formularul de contact (gol = emailul de mai sus)"
@@ -26,7 +27,7 @@
     experience: { role: "", company: "", period: "", description: "", domain: "", logo: "" },
     education: { title: "", institution: "", period: "", domain: "", logo: "" },
     skills: { group: "", items: [] },
-    projects: { title: "", description: "", details: "", tags: [], link: "", image: "", gallery: [] },
+    projects: { title: "", description: "", details: "", tags: [], link: "", image: "", gallery: [], hidden: false },
     testimonials: { quote: "", name: "", role: "", company: "", photo: "" },
     items: "", tags: "", gallery: ""
   };
@@ -280,7 +281,7 @@
 
   function itemTitle(o, i) {
     var first = Object.keys(o).map(function (k) { return o[k]; }).filter(function (v) { return typeof v === "string" && v.trim(); })[0];
-    return first || ("Element " + (i + 1));
+    return (first || ("Element " + (i + 1))) + (o.hidden === true ? " · ascuns" : "");
   }
 
   function objectList(parent, key) {
@@ -327,6 +328,12 @@
       var box = el("div");
       Object.keys(v).forEach(function (k) { box.appendChild(field(v, k, onChange)); });
       return box;
+    }
+    if (typeof v === "boolean") {
+      var cb = el("input", { type: "checkbox" });
+      cb.checked = v;
+      cb.addEventListener("change", function () { parent[key] = cb.checked; markDirty(); if (onChange) onChange(); });
+      return el("label", { class: "check" }, [cb, el("span", { text: label(key) })]);
     }
     return stringField(parent, key, onChange);
   }

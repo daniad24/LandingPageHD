@@ -112,3 +112,5 @@ textarea { min-height: 96px; resize: vertical; }
 .dash-detail { display: block; margin-top: 6px; opacity: .8; font-family: ui-monospace, monospace; font-size: .78rem; overflow-wrap: anywhere; }
 .dash-me { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); display: grid; gap: 10px; justify-items: start; }
 .dash-me p { margin: 0; }
+.check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.check input[type=checkbox] { width: 22px; height: 22px; margin: 0; padding: 0; flex: none; accent-color: var(--accent); box-shadow: none; }
